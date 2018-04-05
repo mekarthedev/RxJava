@@ -15,6 +15,7 @@ package io.reactivex.internal.observers;
 
 import io.reactivex.Observer;
 import io.reactivex.annotations.Nullable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -119,7 +120,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
             T v = value;
             value = null;
             lazySet(FUSED_CONSUMED);
-            return v;
+            return Null.wrap(v);
         }
         return null;
     }

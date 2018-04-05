@@ -17,6 +17,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -208,39 +210,27 @@ public class ObservableFromCallableTest {
     }
 
     @Test
-    public void fusedFlatMapNull() {
-        Observable.just(1).flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
-            @Override
-            public ObservableSource<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Observable.fromCallable(new Callable<Object>() {
+    public void nullFromCallable() {
+        Observable
+                .fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         return null;
                     }
-                });
-            }
-        })
-        .test()
-        .assertFailure(NullPointerException.class);
+                })
+                .test()
+                .assertResult((Object)null);
     }
 
     @Test
-    public void fusedFlatMapNullHidden() {
-        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
+    public void nullFusion() throws Exception {
+        ObservableFromCallable<Object> callable = new ObservableFromCallable<Object>(new Callable<Object>() {
             @Override
-            public ObservableSource<? extends Object> apply(Integer v)
-                    throws Exception {
-                return Observable.fromCallable(new Callable<Object>() {
-                    @Override
-                    public Object call() throws Exception {
-                        return null;
-                    }
-                });
+            public Object call() throws Exception {
+                return null;
             }
-        })
-        .test()
-        .assertFailure(NullPointerException.class);
+        });
+        assertSame(Null.NULL, callable.call());
     }
 
     @Test

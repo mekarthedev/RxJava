@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -158,5 +159,30 @@ public class ObservableFilterTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void nullFusion() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+
+        Observable
+                .range(1, 3)
+                .map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer i) throws Exception {
+                        return i % 2 == 0 ? null : i;
+                    }
+                })
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer i) throws Exception {
+                        return i == null || i == 3;
+                    }
+                })
+                .subscribe(to);
+
+        ObserverFusion
+                .assertFusion(to, QueueFuseable.SYNC)
+                .assertResult(null, 3);
     }
 }

@@ -23,7 +23,9 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.observers.TestObserver;
 
 public class ObservableScalarXMapTest {
@@ -68,6 +70,20 @@ public class ObservableScalarXMapTest {
         @Override
         public Integer call() throws Exception {
             return 1;
+        }
+    }
+
+    static final class NullCallablePublisher implements ObservableSource<Integer>, Callable {
+        @Override
+        public void subscribe(Observer<? super Integer> s) {
+            ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(s, null);
+            s.onSubscribe(sd);
+            sd.run();
+        }
+
+        @Override
+        public Object call() throws Exception {
+            return Null.wrap(null);
         }
     }
 
@@ -155,6 +171,34 @@ public class ObservableScalarXMapTest {
     }
 
     @Test
+    public void mapNull() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+
+        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new NullCallablePublisher(), to, new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer f) throws Exception {
+                return Observable.just(f);
+            }
+        }));
+
+        to.assertResult((Integer)null);
+    }
+
+    @Test
+    public void mapperToJustNull() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+
+        assertTrue(ObservableScalarXMap.tryScalarXMapSubscribe(new OneCallablePublisher(), to, new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer f) throws Exception {
+                return Observable.just(null);
+            }
+        }));
+
+        to.assertResult((Integer)null);
+    }
+
+    @Test
     public void scalarMapToEmpty() {
         ObservableScalarXMap.scalarXMap(1, new Function<Integer, ObservableSource<Integer>>() {
             @Override
@@ -164,6 +208,19 @@ public class ObservableScalarXMapTest {
         })
         .test()
         .assertResult();
+    }
+
+    @Test
+    public void scalarMapToJustNull() {
+        ObservableScalarXMap
+                .scalarXMap(1, new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                        return Observable.just(null);
+                    }
+                })
+                .test()
+                .assertResult((Integer)null);
     }
 
     @Test
@@ -234,5 +291,16 @@ public class ObservableScalarXMapTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void scalarDisposableNullFusion() throws Exception {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(to, null);
+        assertEquals(QueueFuseable.SYNC, sd.requestFusion(QueueFuseable.SYNC));
+        assertFalse(sd.isEmpty());
+        assertSame(Null.NULL, sd.poll());
+        assertTrue(sd.isEmpty());
+        assertNull(sd.poll());
     }
 }

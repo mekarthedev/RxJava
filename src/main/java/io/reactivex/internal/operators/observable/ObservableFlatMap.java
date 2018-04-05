@@ -234,7 +234,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
 
             if (get() == 0 && compareAndSet(0, 1)) {
-                actual.onNext(u);
+                actual.onNext(Null.unwrap(u));
                 if (decrementAndGet() == 0) {
                     return true;
                 }
@@ -273,7 +273,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     q = new SpscLinkedArrayQueue<U>(bufferSize);
                     inner.queue = q;
                 }
-                q.offer(value);
+                q.offer(Null.wrap(value));
                 if (getAndIncrement() != 0) {
                     return;
                 }
@@ -351,7 +351,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                                 break;
                             }
 
-                            child.onNext(o);
+                            child.onNext(Null.unwrap(o));
                         }
                         if (o == null) {
                             break;
@@ -444,7 +444,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                                     break;
                                 }
 
-                                child.onNext(o);
+                                child.onNext(Null.unwrap(o));
 
                                 if (checkTerminate()) {
                                     return;

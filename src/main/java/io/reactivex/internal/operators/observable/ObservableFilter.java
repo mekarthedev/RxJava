@@ -17,6 +17,7 @@ import io.reactivex.*;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.observers.BasicFuseableObserver;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
@@ -66,7 +67,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
         public T poll() throws Exception {
             for (;;) {
                 T v = qs.poll();
-                if (v == null || filter.test(v)) {
+                if (v == null || filter.test(Null.unwrap(v))) {
                     return v;
                 }
             }

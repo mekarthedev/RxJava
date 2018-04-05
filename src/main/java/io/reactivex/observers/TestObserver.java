@@ -20,6 +20,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.Null;
 
 /**
  * An Observer that records events and allows making assertions about them.
@@ -106,7 +107,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
                     try {
                         T t;
                         while ((t = qs.poll()) != null) {
-                            values.add(t);
+                            values.add(Null.unwrap(t));
                         }
                         completions++;
 
@@ -137,7 +138,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         if (establishedFusionMode == QueueDisposable.ASYNC) {
             try {
                 while ((t = qs.poll()) != null) {
-                    values.add(t);
+                    values.add(Null.unwrap(t));
                 }
             } catch (Throwable ex) {
                 // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
@@ -148,10 +149,6 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         }
 
         values.add(t);
-
-        if (t == null) {
-            errors.add(new NullPointerException("onNext received a null value"));
-        }
 
         actual.onNext(t);
     }

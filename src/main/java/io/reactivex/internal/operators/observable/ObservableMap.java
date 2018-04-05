@@ -17,8 +17,8 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.BasicFuseableObserver;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T, U> {
     final Function<? super T, ? extends U> function;
@@ -56,7 +56,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
             U v;
 
             try {
-                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper function returned a null value.");
+                v = mapper.apply(t);
             } catch (Throwable ex) {
                 fail(ex);
                 return;
@@ -73,7 +73,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
         @Override
         public U poll() throws Exception {
             T t = qs.poll();
-            return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
+            return t != null ? Null.wrap(mapper.apply(Null.unwrap(t))) : null;
         }
     }
 }

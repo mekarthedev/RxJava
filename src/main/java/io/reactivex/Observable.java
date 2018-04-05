@@ -2265,7 +2265,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item) {
-        ObjectHelper.requireNonNull(item, "The item is null");
         return RxJavaPlugins.onAssembly(new ObservableJust<T>(item));
     }
 
@@ -6297,7 +6296,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             if (v == null) {
                 return empty();
             }
-            return ObservableScalarXMap.scalarXMap(v, mapper);
+            return ObservableScalarXMap.scalarXMap(Null.unwrap(v), mapper);
         }
         return RxJavaPlugins.onAssembly(new ObservableConcatMap<T, R>(this, mapper, prefetch, ErrorMode.IMMEDIATE));
     }
@@ -8348,7 +8347,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             if (v == null) {
                 return empty();
             }
-            return ObservableScalarXMap.scalarXMap(v, mapper);
+            return ObservableScalarXMap.scalarXMap(Null.unwrap(v), mapper);
         }
         return RxJavaPlugins.onAssembly(new ObservableFlatMap<T, R>(this, mapper, delayErrors, maxConcurrency, bufferSize));
     }

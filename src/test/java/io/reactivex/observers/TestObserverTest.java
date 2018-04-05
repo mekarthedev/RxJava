@@ -841,14 +841,6 @@ public class TestObserverTest {
         to.onNext(1);
 
         to.assertError(IllegalStateException.class);
-
-        to = TestObserver.create();
-
-        to.onSubscribe(Disposables.empty());
-
-        to.onNext(null);
-
-        to.assertFailure(NullPointerException.class, (Integer)null);
     }
 
     @Test

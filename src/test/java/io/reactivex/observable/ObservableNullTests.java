@@ -349,16 +349,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void fromCallableReturnsNull() {
-        Observable.fromCallable(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                return null;
-            }
-        }).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void fromFutureNull() {
         Observable.fromFuture(null);
     }
@@ -558,7 +548,7 @@ public class ObservableNullTests {
     public void justNull() throws Exception {
         @SuppressWarnings("rawtypes")
         Class<Observable> clazz = Observable.class;
-        for (int argCount = 1; argCount < 10; argCount++) {
+        for (int argCount = 2; argCount < 10; argCount++) {
             for (int argNull = 1; argNull <= argCount; argNull++) {
                 Class<?>[] params = new Class[argCount];
                 Arrays.fill(params, Object.class);
@@ -1497,21 +1487,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void flatMapCombinerCombinerReturnsNull() {
-        just1.flatMap(new Function<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> apply(Integer v) {
-                return just1;
-            }
-        }, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void flatMapIterableMapperNull() {
         just1.flatMapIterable(null);
     }
@@ -1559,21 +1534,6 @@ public class ObservableNullTests {
                 return Arrays.asList(1);
             }
         }, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void flatMapIterableCombinerReturnsNull() {
-        just1.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) {
-                return Arrays.asList(1);
-            }
-        }, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1671,16 +1631,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void mapNull() {
         just1.map(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void mapReturnsNull() {
-        just1.map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) {
-                return null;
-            }
-        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)

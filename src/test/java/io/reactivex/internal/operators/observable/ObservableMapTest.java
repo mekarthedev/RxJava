@@ -71,6 +71,31 @@ public class ObservableMapTest {
     }
 
     @Test
+    public void mapNull() {
+        Observable
+                .just("src")
+                .map(new Function<Object, Object>() {
+                    @Override
+                    public Object apply(Object o) throws Exception {
+                        return null;
+                    }
+                })
+                .test()
+                .assertResult((Object)null);
+
+        Observable
+                .just(null)
+                .map(new Function<Object, Boolean>() {
+                    @Override
+                    public Boolean apply(Object o) throws Exception {
+                        return o == null;
+                    }
+                })
+                .test()
+                .assertResult(true);
+    }
+
+    @Test
     public void testMapMany() {
         /* simulate a top-level async call which returns IDs */
         Observable<Integer> ids = Observable.just(1, 2);
@@ -386,6 +411,31 @@ public class ObservableMapTest {
 
         ObserverFusion.assertFusion(to, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void nullFusion() {
+        TestObserver<Boolean> to = ObserverFusion.newTest(QueueFuseable.ANY);
+
+        Observable
+                .range(1, 3)
+                .map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer i) throws Exception {
+                        return i % 2 == 0 ? null : i;
+                    }
+                })
+                .map(new Function<Object, Boolean>() {
+                    @Override
+                    public Boolean apply(Object o) throws Exception {
+                        return o == null ? null : false;
+                    }
+                })
+                .subscribe(to);
+
+        ObserverFusion
+                .assertFusion(to, QueueFuseable.SYNC)
+                .assertResult(false, null, false);
     }
 
     @Test

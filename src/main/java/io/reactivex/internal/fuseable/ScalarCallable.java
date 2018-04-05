@@ -12,6 +12,8 @@
  */
 package io.reactivex.internal.fuseable;
 
+import io.reactivex.internal.util.Null;
+
 import java.util.concurrent.Callable;
 
 /**
@@ -32,6 +34,9 @@ import java.util.concurrent.Callable;
 public interface ScalarCallable<T> extends Callable<T> {
 
     // overridden to remove the throws Exception
+    /**
+     * @return Either {@link T} value, or {@link Null#NULL} for {@code null} value, or {@code null} for 'no value'.
+     */
     @Override
     T call();
 }

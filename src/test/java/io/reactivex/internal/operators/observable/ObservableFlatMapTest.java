@@ -949,14 +949,14 @@ public class ObservableFlatMapTest {
                 @Override
                 public Observable<Integer> apply(Integer v)
                         throws Exception {
-                    return Observable.just(v + 1);
+                    return Observable.just(v % 2 == 0 ? v + 1 : null);
                 }
             }, 1)
             .subscribeWith(new TestObserver<Integer>() {
                 @Override
                 public void onNext(Integer t) {
                     super.onNext(t);
-                    if (t == 1) {
+                    if (t != null && t == 1) {
                         for (int i = 1; i < 10; i++) {
                             ps.onNext(i);
                         }
@@ -971,7 +971,7 @@ public class ObservableFlatMapTest {
                 to.onError(new CompositeException(errors));
             }
 
-            to.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            to.assertResult(1, null, 3, null, 5, null, 7, null, 9, null);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -985,14 +985,14 @@ public class ObservableFlatMapTest {
             @Override
             public Observable<Integer> apply(Integer v)
                     throws Exception {
-                return Observable.just(v + 1).hide();
+                return Observable.just(v % 2 == 0 ? v + 1 : null).hide();
             }
         }, 1)
         .subscribeWith(new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
-                if (t == 1) {
+                if (t != null && t == 1) {
                     for (int i = 1; i < 10; i++) {
                         ps.onNext(i);
                     }
@@ -1003,6 +1003,6 @@ public class ObservableFlatMapTest {
 
         ps.onNext(0);
 
-        to.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        to.assertResult(1, null, 3, null, 5, null, 7, null, 9, null);
     }
 }

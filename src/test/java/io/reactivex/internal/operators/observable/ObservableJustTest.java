@@ -13,31 +13,18 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.internal.fuseable.ScalarCallable;
-import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.internal.util.Null;
+import org.junit.Test;
 
-/**
- * Represents a constant scalar value.
- * @param <T> the value type
- */
-public final class ObservableJust<T> extends Observable<T> implements ScalarCallable<T> {
+import static org.junit.Assert.*;
 
-    private final T value;
-    public ObservableJust(final T value) {
-        this.value = value;
-    }
+public class ObservableJustTest {
 
-    @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        ScalarDisposable<T> sd = new ScalarDisposable<T>(s, value);
-        s.onSubscribe(sd);
-        sd.run();
-    }
-
-    @Override
-    public T call() {
-        return Null.wrap(value);
+    @Test
+    public void scalarCallableWithNull() {
+        ScalarCallable callable = (ScalarCallable)Observable.just(null);
+        assertSame(Null.NULL, callable.call());
     }
 }

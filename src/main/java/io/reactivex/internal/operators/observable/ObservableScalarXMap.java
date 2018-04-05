@@ -23,6 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -67,7 +68,7 @@ public final class ObservableScalarXMap {
             ObservableSource<? extends R> r;
 
             try {
-                r = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
+                r = ObjectHelper.requireNonNull(mapper.apply(Null.unwrap(t)), "The mapper returned a null ObservableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 EmptyDisposable.error(ex, observer);
@@ -89,7 +90,7 @@ public final class ObservableScalarXMap {
                     EmptyDisposable.complete(observer);
                     return true;
                 }
-                ScalarDisposable<R> sd = new ScalarDisposable<R>(observer, u);
+                ScalarDisposable<R> sd = new ScalarDisposable<R>(observer, Null.unwrap(u));
                 observer.onSubscribe(sd);
                 sd.run();
             } else {
@@ -159,7 +160,7 @@ public final class ObservableScalarXMap {
                     EmptyDisposable.complete(s);
                     return;
                 }
-                ScalarDisposable<R> sd = new ScalarDisposable<R>(s, u);
+                ScalarDisposable<R> sd = new ScalarDisposable<R>(s, Null.unwrap(u));
                 s.onSubscribe(sd);
                 sd.run();
             } else {
@@ -208,7 +209,7 @@ public final class ObservableScalarXMap {
         public T poll() throws Exception {
             if (get() == FUSED) {
                 lazySet(ON_COMPLETE);
-                return value;
+                return Null.wrap(value);
             }
             return null;
         }

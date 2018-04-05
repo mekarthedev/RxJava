@@ -510,6 +510,9 @@ public class ParamValidationCheckerTest {
 
         addIgnore(new ParamIgnore(Completable.class, "unsafeCreate", CompletableSource.class));
 
+        // null item values are allowed
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class));
+
         // -----------------------------------------------------------------------------------
 
         defaultValues = new HashMap<Class<?>, Object>();

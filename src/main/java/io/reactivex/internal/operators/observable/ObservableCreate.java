@@ -22,6 +22,7 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableCreate<T> extends Observable<T> {
@@ -59,10 +60,6 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public void onNext(T t) {
-            if (t == null) {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
-                return;
-            }
             if (!isDisposed()) {
                 observer.onNext(t);
             }
@@ -158,10 +155,6 @@ public final class ObservableCreate<T> extends Observable<T> {
             if (emitter.isDisposed() || done) {
                 return;
             }
-            if (t == null) {
-                onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
-                return;
-            }
             if (get() == 0 && compareAndSet(0, 1)) {
                 emitter.onNext(t);
                 if (decrementAndGet() == 0) {
@@ -170,7 +163,7 @@ public final class ObservableCreate<T> extends Observable<T> {
             } else {
                 SimpleQueue<T> q = queue;
                 synchronized (q) {
-                    q.offer(t);
+                    q.offer(Null.wrap(t));
                 }
                 if (getAndIncrement() != 0) {
                     return;
@@ -250,7 +243,7 @@ public final class ObservableCreate<T> extends Observable<T> {
                         break;
                     }
 
-                    e.onNext(v);
+                    e.onNext(Null.unwrap(v));
                 }
 
                 missed = addAndGet(-missed);

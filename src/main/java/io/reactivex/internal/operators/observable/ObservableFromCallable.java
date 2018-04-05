@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.DeferredScalarDisposable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -39,7 +40,7 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Ca
         }
         T value;
         try {
-            value = ObjectHelper.requireNonNull(callable.call(), "Callable returned null");
+            value = callable.call();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
@@ -54,6 +55,6 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Ca
 
     @Override
     public T call() throws Exception {
-        return ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
+        return Null.wrap(callable.call());
     }
 }

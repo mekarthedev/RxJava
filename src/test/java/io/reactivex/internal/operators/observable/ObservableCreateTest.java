@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Cancellable;
+import io.reactivex.functions.Predicate;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -45,6 +46,7 @@ public class ObservableCreateTest {
 
                 e.onNext(1);
                 e.onNext(2);
+                e.onNext(null);
                 e.onNext(3);
                 e.onComplete();
                 e.onError(new TestException());
@@ -54,7 +56,7 @@ public class ObservableCreateTest {
             }
         })
         .test()
-        .assertResult(1, 2, 3);
+        .assertResult(1, 2, null, 3);
 
         assertTrue(d.isDisposed());
     }
@@ -211,50 +213,34 @@ public class ObservableCreateTest {
     }
 
     @Test
-    public void createNullValue() {
-        final Throwable[] error = { null };
-
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
-                }
-            }
-        })
-        .test()
-        .assertFailure(NullPointerException.class);
-
-        assertNull(error[0]);
-    }
-
-    @Test
-    public void createNullValueSerialized() {
-        final Throwable[] error = { null };
-
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
-                e = e.serialize();
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
-                }
-            }
-        })
-        .test()
-        .assertFailure(NullPointerException.class);
-
-        assertNull(error[0]);
+    public void concurrentNullsEmitting() {
+        Observable
+                .create(new ObservableOnSubscribe<Object>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Object> e) throws Exception {
+                        final ObservableEmitter<Object> f = e.serialize();
+                        Runnable r = new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+                                    f.onNext(null);
+                                }
+                            }
+                        };
+                        TestHelper.race(r, r);
+                    }
+                })
+                .test()
+                .assertSubscribed()
+                .assertNever(new Predicate<Object>() {
+                    @Override
+                    public boolean test(Object o) throws Exception {
+                        return o != null;
+                    }
+                })
+                .assertValueCount(TestHelper.RACE_DEFAULT_LOOPS * 2)
+                .assertNotComplete()
+                .assertNoErrors();
     }
 
     @Test
@@ -270,35 +256,11 @@ public class ObservableCreateTest {
     }
 
     @Test
-    public void nullValue() {
-        Observable.create(new ObservableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(ObservableEmitter<Object> e) throws Exception {
-                e.onNext(null);
-            }
-        })
-        .test()
-        .assertFailure(NullPointerException.class);
-    }
-
-    @Test
     public void nullThrowable() {
         Observable.create(new ObservableOnSubscribe<Object>() {
             @Override
             public void subscribe(ObservableEmitter<Object> e) throws Exception {
                 e.onError(null);
-            }
-        })
-        .test()
-        .assertFailure(NullPointerException.class);
-    }
-
-    @Test
-    public void nullValueSync() {
-        Observable.create(new ObservableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(ObservableEmitter<Object> e) throws Exception {
-                e.serialize().onNext(null);
             }
         })
         .test()
