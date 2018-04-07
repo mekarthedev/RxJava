@@ -31,7 +31,7 @@ public class ObservableDematerializeTest {
 
     @Test
     public void testDematerialize1() {
-        Observable<Notification<Integer>> notifications = Observable.just(1, 2).materialize();
+        Observable<Notification<Integer>> notifications = Observable.fromArray(1, 2, null, 3).materialize();
         Observable<Integer> dematerialize = notifications.dematerialize();
 
         Observer<Integer> observer = TestHelper.mockObserver();
@@ -40,6 +40,8 @@ public class ObservableDematerializeTest {
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onNext(null);
+        verify(observer, times(1)).onNext(3);
         verify(observer, times(1)).onComplete();
         verify(observer, never()).onError(any(Throwable.class));
     }

@@ -90,6 +90,22 @@ public class ObservableMaterializeTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")  // unchecked generics array creation
+    public void materialize3() {
+        Observable
+                .fromArray(1, null, 3, 4)
+                .materialize()
+                .test()
+                .assertResult(
+                        Notification.<Integer>createOnNext(1),
+                        Notification.<Integer>createOnNext(null),
+                        Notification.<Integer>createOnNext(3),
+                        Notification.<Integer>createOnNext(4),
+                        Notification.<Integer>createOnComplete()
+                );
+    }
+
+    @Test
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 

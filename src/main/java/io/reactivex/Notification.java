@@ -16,6 +16,7 @@ package io.reactivex;
 import io.reactivex.annotations.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.Null;
 
 /**
  * Represents the reactive signal types: onNext, onError and onComplete and
@@ -24,7 +25,7 @@ import io.reactivex.internal.util.NotificationLite;
  */
 public final class Notification<T> {
 
-    final Object value;
+    private final Object value;
 
     /** Not meant to be implemented externally. */
     private Notification(Object value) {
@@ -71,7 +72,7 @@ public final class Notification<T> {
     public T getValue() {
         Object o = value;
         if (o != null && !NotificationLite.isError(o)) {
-            return (T)value;
+            return Null.unwrap((T)o);
         }
         return null;
     }
@@ -115,7 +116,7 @@ public final class Notification<T> {
         if (NotificationLite.isError(o)) {
             return "OnErrorNotification[" + NotificationLite.getError(o) + "]";
         }
-        return "OnNextNotification[" + value + "]";
+        return "OnNextNotification[" + Null.unwrap(value) + "]";
     }
 
     /**
@@ -127,8 +128,7 @@ public final class Notification<T> {
      */
     @NonNull
     public static <T> Notification<T> createOnNext(@NonNull T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
-        return new Notification<T>(value);
+        return new Notification<T>(Null.wrap(value));
     }
 
     /**

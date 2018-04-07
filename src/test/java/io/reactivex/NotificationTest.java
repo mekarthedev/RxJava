@@ -25,7 +25,10 @@ public class NotificationTest {
     public void valueOfOnErrorIsNull() {
         Notification<Integer> notification = Notification.createOnError(new TestException());
 
+        assertFalse(notification.isOnNext());
         assertNull(notification.getValue());
+        assertFalse(notification.isOnComplete());
+        assertTrue(notification.isOnError());
         assertTrue(notification.getError().toString(), notification.getError() instanceof TestException);
     }
 
@@ -33,9 +36,33 @@ public class NotificationTest {
     public void valueOfOnCompleteIsNull() {
         Notification<Integer> notification = Notification.createOnComplete();
 
+        assertFalse(notification.isOnNext());
         assertNull(notification.getValue());
+        assertFalse(notification.isOnError());
         assertNull(notification.getError());
         assertTrue(notification.isOnComplete());
+    }
+
+    @Test
+    public void valueOfOnNext() {
+        Notification<Integer> notification = Notification.createOnNext(42);
+
+        assertTrue(notification.isOnNext());
+        assertEquals(notification.getValue(), (Integer)42);
+        assertFalse(notification.isOnError());
+        assertNull(notification.getError());
+        assertFalse(notification.isOnComplete());
+    }
+
+    @Test
+    public void valueOfOnNextNull() {
+        Notification<Integer> notification = Notification.createOnNext(null);
+
+        assertTrue(notification.isOnNext());
+        assertNull(notification.getValue());
+        assertFalse(notification.isOnError());
+        assertNull(notification.getError());
+        assertFalse(notification.isOnComplete());
     }
 
     @Test
@@ -60,6 +87,7 @@ public class NotificationTest {
     @Test
     public void toStringPattern() {
         assertEquals("OnNextNotification[1]", Notification.createOnNext(1).toString());
+        assertEquals("OnNextNotification[null]", Notification.createOnNext(null).toString());
         assertEquals("OnErrorNotification[io.reactivex.exceptions.TestException]", Notification.createOnError(new TestException()).toString());
         assertEquals("OnCompleteNotification", Notification.createOnComplete().toString());
     }
