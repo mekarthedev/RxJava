@@ -1285,14 +1285,6 @@ public class TestSubscriberTest {
         ts.onNext(1);
 
         ts.assertError(IllegalStateException.class);
-
-        ts = TestSubscriber.create();
-
-        ts.onSubscribe(new BooleanSubscription());
-
-        ts.onNext(null);
-
-        ts.assertFailure(NullPointerException.class, (Integer)null);
     }
 
     @Test

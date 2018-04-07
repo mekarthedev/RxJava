@@ -339,11 +339,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void fromArrayOneIsNull() {
-        Observable.fromArray(1, null).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void fromCallableNull() {
         Observable.fromCallable(null);
     }
@@ -2121,11 +2116,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void startWithArrayNull() {
         just1.startWithArray((Integer[])null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void startWithArrayOneNull() {
-        just1.startWithArray(1, null).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)

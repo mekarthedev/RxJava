@@ -17,6 +17,7 @@ import io.reactivex.*;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.BasicQueueDisposable;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableFromArray<T> extends Observable<T> {
     final T[] array;
@@ -69,7 +70,7 @@ public final class ObservableFromArray<T> extends Observable<T> {
             T[] a = array;
             if (i != a.length) {
                 index = i + 1;
-                return ObjectHelper.requireNonNull(a[i], "The array element is null");
+                return Null.wrap(a[i]);
             }
             return null;
         }
@@ -100,10 +101,6 @@ public final class ObservableFromArray<T> extends Observable<T> {
 
             for (int i = 0; i < n && !isDisposed(); i++) {
                 T value = a[i];
-                if (value == null) {
-                    actual.onError(new NullPointerException("The " + i + "th element is null"));
-                    return;
-                }
                 actual.onNext(value);
             }
             if (!isDisposed()) {

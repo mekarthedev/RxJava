@@ -89,11 +89,6 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
         if (done) {
             return;
         }
-        if (t == null) {
-            s.dispose();
-            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
-            return;
-        }
         synchronized (this) {
             if (done) {
                 return;

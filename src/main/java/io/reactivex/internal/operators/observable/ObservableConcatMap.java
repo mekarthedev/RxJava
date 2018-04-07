@@ -123,7 +123,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 return;
             }
             if (fusionMode == QueueDisposable.NONE) {
-                queue.offer(t);
+                queue.offer(Null.wrap(t));
             }
             drain();
         }
@@ -205,7 +205,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends U> o;
 
                         try {
-                            o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
+                            o = ObjectHelper.requireNonNull(mapper.apply(Null.unwrap(t)), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             dispose();
@@ -343,7 +343,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         @Override
         public void onNext(T value) {
             if (sourceMode == QueueDisposable.NONE) {
-                queue.offer(value);
+                queue.offer(Null.wrap(value));
             }
             drain();
         }
@@ -438,7 +438,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                         ObservableSource<? extends R> o;
 
                         try {
-                            o = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
+                            o = ObjectHelper.requireNonNull(mapper.apply(Null.unwrap(v)), "The mapper returned a null ObservableSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             cancelled = true;
@@ -461,7 +461,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                             }
 
                             if (w != null && !cancelled) {
-                                actual.onNext(w);
+                                actual.onNext(Null.unwrap(w));
                             }
                             continue;
                         } else {

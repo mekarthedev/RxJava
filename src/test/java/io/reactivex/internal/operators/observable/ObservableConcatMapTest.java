@@ -32,6 +32,34 @@ import io.reactivex.subjects.*;
 public class ObservableConcatMapTest {
 
     @Test
+    public void normalWithCallableInner() {
+        Observable
+                .fromArray(1, null, 2).hide()
+                .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer i) throws Exception {
+                        return Observable.just(i);
+                    }
+                })
+                .test()
+                .assertResult(1, null, 2);
+    }
+
+    @Test
+    public void normalWithHiddenInner() {
+        Observable
+                .fromArray(1, null, 2).hide()
+                .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer i) throws Exception {
+                        return Observable.just(i).hide();
+                    }
+                })
+                .test()
+                .assertResult(1, null, 2);
+    }
+
+    @Test
     public void asyncFused() {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -204,16 +232,42 @@ public class ObservableConcatMapTest {
     }
 
     @Test
-    public void normalDelayErrors() {
-        Observable.just(1).hide()
+    public void normalDelayErrorsFromScalar() {
+        Observable.<Integer>just(null)
+                .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                        return Observable.just(v).hide();
+                    }
+                })
+                .test()
+                .assertResult((Integer)null);
+    }
+
+    @Test
+    public void normalDelayErrorsWithCallableInner() {
+        Observable.fromArray(1, null, 2).hide()
         .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(Integer v) throws Exception {
-                return Observable.range(v, 2);
+                return Observable.just(v);
             }
         })
         .test()
-        .assertResult(1, 2);
+        .assertResult(1, null, 2);
+    }
+
+    @Test
+    public void normalDelayErrorsWithHiddenInner() {
+        Observable.fromArray(1, null, 2).hide()
+                .concatMapDelayError(new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                        return Observable.just(v).hide();
+                    }
+                })
+                .test()
+                .assertResult(1, null, 2);
     }
 
     @Test
@@ -442,14 +496,14 @@ public class ObservableConcatMapTest {
                 @Override
                 public Observable<Integer> apply(Integer v)
                         throws Exception {
-                    return Observable.just(v + 1);
+                    return Observable.just(v == 1 ? null : v + 1);
                 }
             }, 1)
             .subscribeWith(new TestObserver<Integer>() {
                 @Override
                 public void onNext(Integer t) {
                     super.onNext(t);
-                    if (t == 1) {
+                    if (t != null && t == 1) {
                         for (int i = 1; i < 10; i++) {
                             ps.onNext(i);
                         }
@@ -464,7 +518,7 @@ public class ObservableConcatMapTest {
                 to.onError(new CompositeException(errors));
             }
 
-            to.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            to.assertResult(1, null, 3, 4, 5, 6, 7, 8, 9, 10);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -478,14 +532,14 @@ public class ObservableConcatMapTest {
             @Override
             public Observable<Integer> apply(Integer v)
                     throws Exception {
-                return Observable.just(v + 1).hide();
+                return Observable.just(v == 1 ? null : v + 1).hide();
             }
         }, 1)
         .subscribeWith(new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
-                if (t == 1) {
+                if (t != null && t == 1) {
                     for (int i = 1; i < 10; i++) {
                         ps.onNext(i);
                     }
@@ -496,6 +550,6 @@ public class ObservableConcatMapTest {
 
         ps.onNext(0);
 
-        to.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        to.assertResult(1, null, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 }

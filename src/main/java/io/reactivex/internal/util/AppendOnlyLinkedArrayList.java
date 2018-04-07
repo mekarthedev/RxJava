@@ -40,8 +40,7 @@ public class AppendOnlyLinkedArrayList<T> {
     }
 
     /**
-     * Append a non-null value to the list.
-     * <p>Don't add null to the list!
+     * Append a value to the list.
      * @param value the value to append
      */
     public void add(T value) {
@@ -63,6 +62,9 @@ public class AppendOnlyLinkedArrayList<T> {
      */
     public void setFirst(T value) {
         head[0] = value;
+        if (offset == 0 && head == tail) {
+            offset = 1;
+        }
     }
 
     /**
@@ -76,21 +78,18 @@ public class AppendOnlyLinkedArrayList<T> {
     }
 
     /**
-     * Loops over all elements of the array until a null element is encountered or
-     * the given predicate returns true.
+     * Loops over all elements of the array until the given predicate returns true.
      * @param consumer the consumer of values that returns true if the forEach should terminate
      */
     @SuppressWarnings("unchecked")
     public void forEachWhile(NonThrowingPredicate<? super T> consumer) {
         Object[] a = head;
+        final Object[] t = tail;
         final int c = capacity;
         while (a != null) {
-            for (int i = 0; i < c; i++) {
-                Object o = a[i];
-                if (o == null) {
-                    break;
-                }
-                if (consumer.test((T)o)) {
+            final int off = (a != t ? c : offset);
+            for (int i = 0; i < off; i++) {
+                if (consumer.test((T)a[i])) {
                     return;
                 }
             }
@@ -108,15 +107,12 @@ public class AppendOnlyLinkedArrayList<T> {
      */
     public <U> boolean accept(Subscriber<? super U> subscriber) {
         Object[] a = head;
+        final Object[] t = tail;
         final int c = capacity;
         while (a != null) {
-            for (int i = 0; i < c; i++) {
-                Object o = a[i];
-                if (o == null) {
-                    break;
-                }
-
-                if (NotificationLite.acceptFull(o, subscriber)) {
+            final int off = (a != t ? c : offset);
+            for (int i = 0; i < off; i++) {
+                if (NotificationLite.acceptFull(a[i], subscriber)) {
                     return true;
                 }
             }
@@ -135,16 +131,14 @@ public class AppendOnlyLinkedArrayList<T> {
      * @return true if a terminal event has been reached
      */
     public <U> boolean accept(Observer<? super U> observer) {
+        // FIXME: seems like null-tolerant implementation introduced 10% performance impact.
         Object[] a = head;
+        final Object[] t = tail;
         final int c = capacity;
         while (a != null) {
-            for (int i = 0; i < c; i++) {
-                Object o = a[i];
-                if (o == null) {
-                    break;
-                }
-
-                if (NotificationLite.acceptFull(o, observer)) {
+            final int off = (a != t ? c : offset);
+            for (int i = 0; i < off; i++) {
+                if (NotificationLite.acceptFull(a[i], observer)) {
                     return true;
                 }
             }
@@ -154,8 +148,7 @@ public class AppendOnlyLinkedArrayList<T> {
     }
 
     /**
-     * Loops over all elements of the array until a null element is encountered or
-     * the given predicate returns true.
+     * Loops over all elements of the array until the given predicate returns true.
      * @param <S> the extra state type
      * @param state the extra state passed into the consumer
      * @param consumer the consumer of values that returns true if the forEach should terminate
@@ -164,14 +157,12 @@ public class AppendOnlyLinkedArrayList<T> {
     @SuppressWarnings("unchecked")
     public <S> void forEachWhile(S state, BiPredicate<? super S, ? super T> consumer) throws Exception {
         Object[] a = head;
+        final Object[] t = tail;
         final int c = capacity;
-        for (;;) {
-            for (int i = 0; i < c; i++) {
-                Object o = a[i];
-                if (o == null) {
-                    return;
-                }
-                if (consumer.test(state, (T)o)) {
+        while (a != null) {
+            final int off = (a != t ? c : offset);
+            for (int i = 0; i < off; i++) {
+                if (consumer.test(state, (T)a[i])) {
                     return;
                 }
             }

@@ -14,6 +14,7 @@ package io.reactivex.subscribers;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.internal.util.Null;
 import org.reactivestreams.*;
 
 import io.reactivex.FlowableSubscriber;
@@ -198,7 +199,7 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
         if (establishedFusionMode == QueueSubscription.ASYNC) {
             try {
                 while ((t = qs.poll()) != null) {
-                    values.add(t);
+                    values.add(Null.unwrap(t));
                 }
             } catch (Throwable ex) {
                 // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
@@ -209,10 +210,6 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
         }
 
         values.add(t);
-
-        if (t == null) {
-            errors.add(new NullPointerException("onNext received a null value"));
-        }
 
         actual.onNext(t);
     }

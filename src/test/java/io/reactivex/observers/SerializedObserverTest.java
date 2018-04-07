@@ -835,7 +835,6 @@ public class SerializedObserverTest {
     }
 
     @Test
-    @Ignore("Null values not permitted")
     public void testSerializeNull() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
         TestObserver<Integer> to = new TestObserver<Integer>() {
@@ -843,6 +842,7 @@ public class SerializedObserverTest {
             public void onNext(Integer t) {
                 if (t != null && t == 0) {
                     serial.get().onNext(null);
+                    serial.get().onNext(1);
                 }
                 super.onNext(t);
             }
@@ -851,9 +851,10 @@ public class SerializedObserverTest {
         SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
         serial.set(sobs);
 
+        sobs.onSubscribe(Disposables.empty());
         sobs.onNext(0);
 
-        to.assertValues(0, null);
+        to.assertValues(0, null, 1);
     }
 
     @Test
@@ -1226,21 +1227,5 @@ public class SerializedObserverTest {
             }
         }
 
-    }
-
-    @Test
-    public void nullOnNext() {
-
-        TestObserver<Integer> to = new TestObserver<Integer>();
-
-        final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
-
-        Disposable d = Disposables.empty();
-
-        so.onSubscribe(d);
-
-        so.onNext(null);
-
-        to.assertFailureAndMessage(NullPointerException.class, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 }
