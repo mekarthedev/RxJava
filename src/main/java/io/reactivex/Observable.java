@@ -4988,11 +4988,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final T blockingFirst() {
         BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
         subscribe(s);
-        T v = s.blockingGet();
-        if (v != null) {
-            return v;
-        }
-        throw new NoSuchElementException();
+        s.blockingGet();
+        return s.getValue();
     }
 
     /**
@@ -5016,8 +5013,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final T blockingFirst(T defaultItem) {
         BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
         subscribe(s);
-        T v = s.blockingGet();
-        return v != null ? v : defaultItem;
+        return s.blockingGet() ? s.getValue() : defaultItem;
     }
 
     /**
@@ -5127,11 +5123,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final T blockingLast() {
         BlockingLastObserver<T> s = new BlockingLastObserver<T>();
         subscribe(s);
-        T v = s.blockingGet();
-        if (v != null) {
-            return v;
-        }
-        throw new NoSuchElementException();
+        s.blockingGet();
+        return s.getValue();
     }
 
     /**
@@ -5159,8 +5152,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final T blockingLast(T defaultItem) {
         BlockingLastObserver<T> s = new BlockingLastObserver<T>();
         subscribe(s);
-        T v = s.blockingGet();
-        return v != null ? v : defaultItem;
+        return s.blockingGet() ? s.getValue() : defaultItem;
     }
 
     /**

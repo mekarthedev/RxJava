@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.observers;
 
+import io.reactivex.internal.util.Null;
+
 /**
  * Blocks until the upstream signals its first value or completes.
  *
@@ -23,7 +25,7 @@ public final class BlockingFirstObserver<T> extends BlockingBaseObserver<T> {
     @Override
     public void onNext(T t) {
         if (value == null) {
-            value = t;
+            value = Null.wrap(t);
             d.dispose();
             countDown();
         }

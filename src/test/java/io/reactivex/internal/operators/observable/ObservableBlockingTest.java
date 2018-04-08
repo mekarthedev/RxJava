@@ -40,9 +40,49 @@ public class ObservableBlockingTest {
     }
 
     @Test
+    public void blockingFirstNull() {
+        assertNull(Observable.fromArray(null, 1)
+                .subscribeOn(Schedulers.computation())
+                .blockingFirst());
+    }
+
+    @Test
     public void blockingFirstDefault() {
         assertEquals(1, Observable.<Integer>empty()
                 .subscribeOn(Schedulers.computation()).blockingFirst(1).intValue());
+    }
+
+    @Test
+    public void blockingFirstNullDefault() {
+        assertNull(Observable.<Integer>empty()
+                .subscribeOn(Schedulers.computation())
+                .blockingFirst(null));
+    }
+
+    @Test
+    public void blockingLast() {
+        assertEquals(10, Observable.range(1, 10)
+                .subscribeOn(Schedulers.computation()).blockingLast().intValue());
+    }
+
+    @Test
+    public void blockingLastNull() {
+        assertNull(Observable.fromArray(1, null)
+                .subscribeOn(Schedulers.computation())
+                .blockingLast());
+    }
+
+    @Test
+    public void blockingLastDefault() {
+        assertEquals(1, Observable.<Integer>empty()
+                .subscribeOn(Schedulers.computation()).blockingLast(1).intValue());
+    }
+
+    @Test
+    public void blockingLastNullDefault() {
+        assertNull(Observable.<Integer>empty()
+                .subscribeOn(Schedulers.computation())
+                .blockingLast(null));
     }
 
     @Test
