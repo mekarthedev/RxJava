@@ -430,4 +430,32 @@ public class ObservableZipIterableTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void zipNulls() {
+        Observable
+                .fromArray(1, null, 3)
+                .zipWith(Arrays.asList("a", "b", null), new BiFunction<Integer, String, String>() {
+                    @Override
+                    public String apply(Integer t1, String t2) {
+                        return t1 + "-" + t2;
+                    }
+                })
+                .test()
+                .assertResult("1-a", "null-b", "3-null");
+    }
+
+    @Test
+    public void zipToNull() {
+        Observable
+                .fromArray(1, 2, 3, 4)
+                .zipWith(Arrays.asList(1, -2, 3, -4), new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer t1, Integer t2) {
+                        return t1 == t2 ? t1 : null;
+                    }
+                })
+                .test()
+                .assertResult(1, null, 3, null);
+    }
 }

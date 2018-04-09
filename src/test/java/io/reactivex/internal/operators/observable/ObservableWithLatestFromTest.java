@@ -632,10 +632,37 @@ public class ObservableWithLatestFromTest {
             }
         })
         .test()
-        .assertFailure(NullPointerException.class);
+        .assertResult((Object)null);
     }
 
+    @Test
     @SuppressWarnings("unchecked")
+    public void combineNull1() {
+        Observable.<Integer>just(null)
+        .withLatestFrom(Observable.just(2), new BiFunction<Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b) throws Exception {
+                return Arrays.asList(a, b);
+            }
+        })
+        .test()
+        .assertResult(Arrays.asList(null, 2));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineWithNull1() {
+        Observable.just(1)
+        .withLatestFrom(Observable.<Integer>just(null), new BiFunction<Integer, Integer, List<Integer>>() {
+            @Override
+            public List<Integer> apply(Integer a, Integer b) throws Exception {
+                return Arrays.asList(a, b);
+            }
+        })
+        .test()
+        .assertResult(Arrays.asList(1, null));
+    }
+
     @Test
     public void combineToNull2() {
         Observable.just(1)
@@ -646,7 +673,35 @@ public class ObservableWithLatestFromTest {
             }
         })
         .test()
-        .assertFailure(NullPointerException.class);
+        .assertResult((Object)null);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineNull2() {
+        Observable.<Integer>just(null)
+        .withLatestFrom(Arrays.asList(Observable.just(2), Observable.just(3)), new Function<Object[], List<Object>>() {
+            @Override
+            public List<Object> apply(Object[] o) throws Exception {
+                return Arrays.asList(o);
+            }
+        })
+        .test()
+        .assertResult(Arrays.<Object>asList(null, 2, 3));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineWithNull2() {
+        Observable.just(1)
+        .withLatestFrom(Arrays.asList(Observable.just(null), Observable.just(3)), new Function<Object[], List<Object>>() {
+            @Override
+            public List<Object> apply(Object[] o) throws Exception {
+                return Arrays.asList(o);
+            }
+        })
+        .test()
+        .assertResult(Arrays.<Object>asList(1, null, 3));
     }
 
     @Test
@@ -654,6 +709,6 @@ public class ObservableWithLatestFromTest {
         Observable.just(1)
         .withLatestFrom(new Observable[0], Functions.justFunction(null))
         .test()
-        .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
+        .assertResult((Integer)null);
     }
 }

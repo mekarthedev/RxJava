@@ -35,7 +35,7 @@ public class ObservableDoAfterNextTest {
     final Consumer<Integer> afterNext = new Consumer<Integer>() {
         @Override
         public void accept(Integer e) throws Exception {
-            values.add(-e);
+            values.add(e != null ? -e : Integer.MIN_VALUE);
         }
     };
 
@@ -55,6 +55,16 @@ public class ObservableDoAfterNextTest {
         .assertResult(1);
 
         assertEquals(Arrays.asList(1, -1), values);
+    }
+
+    @Test
+    public void nulls() {
+        Observable.fromArray(1, null, 2)
+                .doAfterNext(afterNext)
+                .subscribeWith(to)
+                .assertResult(1, null, 2);
+
+        assertEquals(Arrays.asList(1, -1, null, Integer.MIN_VALUE, 2, -2), values);
     }
 
     @Test
@@ -142,6 +152,21 @@ public class ObservableDoAfterNextTest {
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
+    }
+
+    @Test
+    public void nullFusion() {
+        TestObserver<Integer> to0 = ObserverFusion.newTest(QueueFuseable.SYNC);
+
+        Observable.fromArray(1, null, 2, 3)
+                .doAfterNext(afterNext)
+                .subscribe(to0);
+
+        ObserverFusion
+                .assertFusion(to0, QueueFuseable.SYNC)
+                .assertResult(1, null, 2, 3);
+
+        assertEquals(Arrays.asList(-1, Integer.MIN_VALUE, -2, -3), values);
     }
 
     @Test(expected = NullPointerException.class)

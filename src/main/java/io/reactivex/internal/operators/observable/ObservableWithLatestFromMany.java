@@ -159,13 +159,13 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
                     // no latest, skip this value
                     return;
                 }
-                objects[i + 1] = o;
+                objects[i + 1] = Null.unwrap(o);
             }
 
             R v;
 
             try {
-                v = ObjectHelper.requireNonNull(combiner.apply(objects), "combiner returned a null value");
+                v = combiner.apply(objects);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 dispose();
@@ -210,7 +210,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         void innerNext(int index, Object o) {
-            values.set(index, o);
+            values.set(index, Null.wrap(o));
         }
 
         void innerError(int index, Throwable t) {
@@ -286,7 +286,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
         public R apply(T t) throws Exception {
-            return ObjectHelper.requireNonNull(combiner.apply(new Object[] { t }), "The combiner returned a null value");
+            return combiner.apply(new Object[] { t });
         }
     }
 }

@@ -1217,4 +1217,36 @@ public class ObservableCombineLatestTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class, 42);
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void combineWithNull() {
+        Observable
+                .combineLatest(new ObservableSource[]{
+                        Observable.just(1), Observable.just(null), Observable.just(3)
+                }, new Function<Object[], List<Object>>() {
+                    @Override
+                    public List<Object> apply(Object[] o) throws Exception {
+                        return Arrays.asList(o);
+                    }
+                })
+                .test()
+                .assertResult(Arrays.<Object>asList(1, null, 3));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineToNull() {
+        Observable
+                .combineLatest(new ObservableSource[]{
+                        Observable.just(1), Observable.just(2)
+                }, new Function<Object[], Integer>() {
+                    @Override
+                    public Integer apply(Object[] a) throws Exception {
+                        return null;
+                    }
+                })
+                .test()
+                .assertResult((Integer)null);
+    }
 }

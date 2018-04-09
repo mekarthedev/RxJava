@@ -23,6 +23,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableZip<T, R> extends Observable<R> {
 
@@ -91,6 +92,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             this.zipper = zipper;
             this.observers = new ZipObserver[count];
             this.row = (T[])new Object[count];
+            Arrays.fill(this.row, Null.NULL);
             this.delayError = delayError;
         }
 
@@ -162,7 +164,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
                     int i = 0;
                     int emptyCount = 0;
                     for (ZipObserver<T, R> z : zs) {
-                        if (os[i] == null) {
+                        if (os[i] == Null.NULL) {
                             boolean d = z.done;
                             T v = z.queue.poll();
                             boolean empty = v == null;
@@ -171,7 +173,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
                                 return;
                             }
                             if (!empty) {
-                                os[i] = v;
+                                os[i] = Null.unwrap(v);
                             } else {
                                 emptyCount++;
                             }
@@ -194,7 +196,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
                     R v;
                     try {
-                        v = ObjectHelper.requireNonNull(zipper.apply(os.clone()), "The zipper returned a null value");
+                        v = zipper.apply(os.clone());
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         cancel();
@@ -204,7 +206,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
                     a.onNext(v);
 
-                    Arrays.fill(os, null);
+                    Arrays.fill(os, Null.NULL);
                 }
 
                 missing = addAndGet(-missing);
@@ -272,7 +274,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
         @Override
         public void onNext(T t) {
-            queue.offer(t);
+            queue.offer(Null.wrap(t));
             parent.drain();
         }
 

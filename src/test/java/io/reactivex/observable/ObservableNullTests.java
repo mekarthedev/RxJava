@@ -139,30 +139,8 @@ public class ObservableNullTests {
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
-    public void combineLatestVarargsFunctionReturnsNull() {
-        Observable.combineLatest(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, 128, just1).blockingLast();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
     public void combineLatestIterableFunctionNull() {
         Observable.combineLatest(Arrays.asList(just1), null, 128);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestIterableFunctionReturnsNull() {
-        Observable.combineLatest(Arrays.asList(just1), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, 128).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -230,30 +208,8 @@ public class ObservableNullTests {
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorVarargsFunctionReturnsNull() {
-        Observable.combineLatestDelayError(new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, 128, just1).blockingLast();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
     public void combineLatestDelayErrorIterableFunctionNull() {
         Observable.combineLatestDelayError(Arrays.asList(just1), null, 128);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void combineLatestDelayErrorIterableFunctionReturnsNull() {
-        Observable.combineLatestDelayError(Arrays.asList(just1), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] v) {
-                return null;
-            }
-        }, 128).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -750,17 +706,6 @@ public class ObservableNullTests {
         Observable.zip(Arrays.asList(just1, just1), null);
     }
 
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void zipIterableFunctionReturnsNull() {
-        Observable.zip(Arrays.asList(just1, just1), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return null;
-            }
-        }).blockingLast();
-    }
-
     @Test(expected = NullPointerException.class)
     public void zipObservableNull() {
         Observable.zip((Observable<Observable<Object>>)null, new Function<Object[], Object>() {
@@ -774,16 +719,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void zipObservableFunctionNull() {
         Observable.zip((Observable.just(just1)), null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipObservableFunctionReturnsNull() {
-        Observable.zip((Observable.just(just1)), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return null;
-            }
-        }).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)
@@ -815,17 +750,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void zipIterable2FunctionNull() {
         Observable.zipIterable(Arrays.asList(just1, just1), null, true, 128);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test(expected = NullPointerException.class)
-    public void zipIterable2FunctionReturnsNull() {
-        Observable.zipIterable(Arrays.asList(just1, just1), new Function<Object[], Object>() {
-            @Override
-            public Object apply(Object[] a) {
-                return null;
-            }
-        }, true, 128).blockingLast();
     }
 
     //*************************************************************
@@ -2639,16 +2563,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void withLatestFromCombinerReturnsNull() {
-        just1.withLatestFrom(just1, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void zipWithIterableNull() {
         just1.zipWith((Iterable<Integer>)null, new BiFunction<Integer, Integer, Object>() {
             @Override
@@ -2664,16 +2578,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void zipWithIterableCombinerReturnsNull() {
-        just1.zipWith(Arrays.asList(1), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void zipWithIterableIteratorNull() {
         just1.zipWith(new Iterable<Object>() {
             @Override
@@ -2683,16 +2587,6 @@ public class ObservableNullTests {
         }, new BiFunction<Integer, Object, Object>() {
             @Override
             public Object apply(Integer a, Object b) {
-                return 1;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipWithIterableOneIsNull() {
-        Observable.just(1, 2).zipWith(Arrays.asList(1, null), new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) {
                 return 1;
             }
         }).blockingSubscribe();
@@ -2712,16 +2606,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void zipWithCombinerNull() {
         just1.zipWith(just1, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void zipWithCombinerReturnsNull() {
-        just1.zipWith(just1, new BiFunction<Integer, Integer, Object>() {
-            @Override
-            public Object apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingSubscribe();
     }
 
 }

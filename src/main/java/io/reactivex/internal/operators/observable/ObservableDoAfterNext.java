@@ -18,6 +18,7 @@ import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.observers.BasicFuseableObserver;
+import io.reactivex.internal.util.Null;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.
@@ -71,7 +72,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
         public T poll() throws Exception {
             T v = qs.poll();
             if (v != null) {
-                onAfterNext.accept(v);
+                onAfterNext.accept(Null.unwrap(v));
             }
             return v;
         }

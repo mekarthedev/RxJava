@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -20,9 +21,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableCombineLatest<T, R> extends Observable<R> {
@@ -99,6 +100,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             this.combiner = combiner;
             this.delayError = delayError;
             this.latest = new Object[count];
+            Arrays.fill(this.latest, Null.NULL);
             CombinerObserver<T, R>[] as = new CombinerObserver[count];
             for (int i = 0; i < count; i++) {
                 as[i] = new CombinerObserver<T, R>(this, i);
@@ -195,7 +197,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     R v;
 
                     try {
-                        v = ObjectHelper.requireNonNull(combiner.apply(s), "The combiner returned a null value");
+                        v = combiner.apply(s);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         errors.addThrowable(ex);
@@ -225,7 +227,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                 }
                 Object o = latest[index];
                 int a = active;
-                if (o == null) {
+                if (o == Null.NULL) {
                     active = ++a;
                 }
                 latest[index] = item;
@@ -249,7 +251,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                             return;
                         }
 
-                        cancelOthers = latest[index] == null;
+                        cancelOthers = latest[index] == Null.NULL;
                         if (cancelOthers || ++complete == latest.length) {
                             done = true;
                         }
@@ -272,7 +274,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
                     return;
                 }
 
-                cancelOthers = latest[index] == null;
+                cancelOthers = latest[index] == Null.NULL;
                 if (cancelOthers || ++complete == latest.length) {
                     done = true;
                 }

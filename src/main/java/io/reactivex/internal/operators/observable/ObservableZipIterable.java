@@ -111,7 +111,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
             U u;
 
             try {
-                u = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null value");
+                u = iterator.next();
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 error(e);
@@ -120,7 +120,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
 
             V v;
             try {
-                v = ObjectHelper.requireNonNull(zipper.apply(t, u), "The zipper function returned a null value");
+                v = zipper.apply(t, u);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 error(e);

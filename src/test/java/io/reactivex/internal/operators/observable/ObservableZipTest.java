@@ -852,33 +852,33 @@ public class ObservableZipTest {
     }
 
     @Test
-    @Ignore("Null values not allowed")
-    public void testEmitNull() {
-        Observable<Integer> oi = Observable.just(1, null, 3);
-        Observable<String> os = Observable.just("a", "b", null);
-        Observable<String> o = Observable.zip(oi, os, new BiFunction<Integer, String, String>() {
+    public void zipNulls() {
+        Observable<Integer> oi = Observable.fromArray(1, null, 3);
+        Observable<String> os = Observable.fromArray("a", "b", null);
+        Observable
+                .zip(oi, os, new BiFunction<Integer, String, String>() {
+                    @Override
+                    public String apply(Integer t1, String t2) {
+                        return t1 + "-" + t2;
+                    }
+                })
+                .test()
+                .assertResult("1-a", "null-b", "3-null");
+    }
 
-            @Override
-            public String apply(Integer t1, String t2) {
-                return t1 + "-" + t2;
-            }
-
-        });
-
-        final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
-
-            @Override
-            public void accept(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
-        });
-
-        assertEquals(3, list.size());
-        assertEquals("1-a", list.get(0));
-        assertEquals("null-b", list.get(1));
-        assertEquals("3-null", list.get(2));
+    @Test
+    public void zipToNull() {
+        Observable<Integer> oi = Observable.fromArray(1, 2, 3, 4);
+        Observable<Integer> os = Observable.fromArray(1, -2, 3, -4);
+        Observable
+                .zip(oi, os, new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer t1, Integer t2) {
+                        return t1 == t2 ? t1 : null;
+                    }
+                })
+                .test()
+                .assertResult(1, null, 3, null);
     }
 
     @SuppressWarnings("rawtypes")

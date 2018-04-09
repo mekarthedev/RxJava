@@ -21,6 +21,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableWithUpstream<T, R> {
@@ -72,7 +73,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
             if (u != null) {
                 R r;
                 try {
-                    r = ObjectHelper.requireNonNull(combiner.apply(t, u), "The combiner returned a null value");
+                    r = combiner.apply(t, Null.unwrap(u));
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     dispose();
@@ -130,7 +131,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
 
         @Override
         public void onNext(U t) {
-            wlf.lazySet(t);
+            wlf.lazySet(Null.wrap(t));
         }
 
         @Override
