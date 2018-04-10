@@ -340,7 +340,6 @@ public final class ReplaySubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (done) {
             return;
         }

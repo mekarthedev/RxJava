@@ -23,6 +23,7 @@ import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.DeferredScalarDisposable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -153,11 +154,10 @@ public final class AsyncSubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (subscribers.get() == TERMINATED) {
             return;
         }
-        value = t;
+        value = Null.wrap(t);
     }
 
     @SuppressWarnings("unchecked")
@@ -189,7 +189,7 @@ public final class AsyncSubject<T> extends Subject<T> {
             }
         } else {
             for (AsyncDisposable<T> as : array) {
-                as.complete(v);
+                as.complete(Null.unwrap(v));
             }
         }
     }
@@ -229,7 +229,7 @@ public final class AsyncSubject<T> extends Subject<T> {
             } else {
                 T v = value;
                 if (v != null) {
-                    as.complete(v);
+                    as.complete(Null.unwrap(v));
                 } else {
                     as.onComplete();
                 }
@@ -318,7 +318,7 @@ public final class AsyncSubject<T> extends Subject<T> {
      */
     @Nullable
     public T getValue() {
-        return subscribers.get() == TERMINATED ? value : null;
+        return subscribers.get() == TERMINATED ? Null.unwrap(value) : null;
     }
 
     /**
@@ -327,8 +327,12 @@ public final class AsyncSubject<T> extends Subject<T> {
      * @return the array containing the snapshot of all values of the Subject
      */
     public Object[] getValues() {
-        T v = getValue();
-        return v != null ? new Object[] { v } : new Object[0];
+        T v = value;
+        if (v != null && subscribers.get() == TERMINATED) {
+            return new Object[] { Null.unwrap(v) };
+        } else {
+            return new Object[0];
+        }
     }
 
     /**
@@ -340,8 +344,8 @@ public final class AsyncSubject<T> extends Subject<T> {
      * @return the given array if the values fit into it or a new array containing all values
      */
     public T[] getValues(T[] array) {
-        T v = getValue();
-        if (v == null) {
+        T v = value;
+        if (v == null || subscribers.get() != TERMINATED) {
             if (array.length != 0) {
                 array[0] = null;
             }
@@ -350,7 +354,7 @@ public final class AsyncSubject<T> extends Subject<T> {
         if (array.length == 0) {
             array = Arrays.copyOf(array, 1);
         }
-        array[0] = v;
+        array[0] = Null.unwrap(v);
         if (array.length != 1) {
             array[1] = null;
         }

@@ -22,20 +22,6 @@ public abstract class SubjectTest<T> {
     protected abstract Subject<T> create();
 
     @Test
-    public void onNextNull() {
-        Subject<T> p = create();
-
-        try {
-            p.onNext(null);
-            fail("No NullPointerException thrown");
-        } catch (NullPointerException ex) {
-            assertEquals("onNext called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
-        }
-
-        p.test().assertEmpty().cancel();
-    }
-
-    @Test
     public void onErrorNull() {
         Subject<T> p = create();
 

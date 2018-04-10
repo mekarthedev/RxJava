@@ -224,7 +224,6 @@ public final class PublishSubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
         for (PublishDisposable<T> s : subscribers.get()) {
             s.onNext(t);
         }

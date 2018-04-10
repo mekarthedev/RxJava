@@ -50,18 +50,22 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         to.assertNoValues().assertNoErrors().assertNotComplete();
 
         ap.onNext(1);
+        ap.onNext(null);
+        ap.onNext(2);
 
-        to.assertValue(1).assertNoErrors().assertNotComplete();
+        to.assertValues(1, null, 2).assertNoErrors().assertNotComplete();
 
         ap.onComplete();
 
-        to.assertResult(1);
+        to.assertResult(1, null, 2);
     }
 
     @Test
     public void fusionOfflie() {
         UnicastSubject<Integer> ap = UnicastSubject.create();
         ap.onNext(1);
+        ap.onNext(null);
+        ap.onNext(2);
         ap.onComplete();
 
         TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
@@ -71,7 +75,20 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         to
         .assertOf(ObserverFusion.<Integer>assertFuseable())
         .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
-        .assertResult(1);
+        .assertResult(1, null, 2);
+    }
+
+    @Test
+    public void nonFusedOffline() {
+        UnicastSubject<Integer> ap = UnicastSubject.create();
+        ap.onNext(1);
+        ap.onNext(null);
+        ap.onNext(2);
+        ap.onComplete();
+
+        ap.test()
+                .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
+                .assertResult(1, null, 2);
     }
 
     @Test

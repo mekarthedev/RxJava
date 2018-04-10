@@ -1273,4 +1273,62 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         assertSame(o, buf.head);
     }
+
+    @Test
+    public void unboundNulls() {
+        ReplaySubject<Integer> rs = ReplaySubject.create();
+        rs.onNext(1);
+        rs.onNext(null);
+
+        assertTrue(rs.hasValue());
+        assertNull(rs.getValue());
+        assertArrayEquals(new Integer[] { 1, null, null, 0 }, rs.getValues(new Integer[] { 0, 0, 0, 0 }));
+        assertFalse(rs.hasComplete());
+        assertFalse(rs.hasThrowable());
+
+        TestObserver<Integer> to = rs.test();
+        Observable.fromArray(2, null, 3, 4).subscribe(rs);
+        to.assertResult(1, null, 2, null, 3, 4);
+        assertTrue(rs.hasComplete());
+    }
+
+    @Test
+    public void sizeBoundNulls() {
+        ReplaySubject<Integer> rs = ReplaySubject.createWithSize(2);
+        rs.onNext(1);
+        rs.onNext(2);
+        rs.onNext(null);
+
+        assertTrue(rs.hasValue());
+        assertNull(rs.getValue());
+        assertArrayEquals(new Integer[] { 2, null, null, 0 }, rs.getValues(new Integer[] { 0, 0, 0, 0 }));
+        assertFalse(rs.hasComplete());
+        assertFalse(rs.hasThrowable());
+
+        TestObserver<Integer> to = rs.test();
+        Observable.fromArray(3, null, 4, 5).subscribe(rs);
+        to.assertResult(2, null, 3, null, 4, 5);
+        assertTrue(rs.hasComplete());
+    }
+
+    @Test
+    public void timeBoundNulls() {
+        TestScheduler ts = new TestScheduler();
+        ReplaySubject<Integer> rs = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, ts);
+        rs.onNext(1);
+        ts.advanceTimeBy(2, TimeUnit.SECONDS);
+        rs.onNext(2);
+        rs.onNext(null);
+
+        assertTrue(rs.hasValue());
+        assertNull(rs.getValue());
+        assertArrayEquals(new Integer[] { 2, null, null, 0 }, rs.getValues(new Integer[] { 0, 0, 0, 0 }));
+        assertFalse(rs.hasComplete());
+        assertFalse(rs.hasThrowable());
+
+        TestObserver<Integer> to = rs.test();
+        Observable.fromArray(3, null, 4, 5).subscribe(rs);
+        to.assertResult(2, null, 3, null, 4, 5);
+        assertTrue(rs.hasComplete());
+    }
 }

@@ -73,7 +73,6 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     }
 
     @Test
-    @Ignore("Null values not allowed")
     public void testNull() {
         AsyncSubject<String> subject = AsyncSubject.create();
 
@@ -584,5 +583,49 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 
         to1.assertResult();
         to2.assertEmpty();
+    }
+
+    @Test
+    public void getNullValue() {
+        AsyncSubject<Integer> as = AsyncSubject.create();
+        as.onNext(1);
+        as.onNext(null);
+
+        TestObserver<Integer> to = as.test();
+
+        assertFalse(as.hasValue());
+        assertFalse(as.hasComplete());
+
+        as.onComplete();
+
+        assertTrue(as.hasValue());
+        assertNull(as.getValue());
+        assertArrayEquals(new Integer[] { null }, as.getValues());
+        assertArrayEquals(new Integer[] { null, null, 0 }, as.getValues(new Integer[] { 0, 0, 0 }));
+        assertTrue(as.hasComplete());
+        to.assertResult((Integer)null);
+    }
+
+    @Test
+    public void observeLiveNull() {
+        AsyncSubject<Integer> as = AsyncSubject.create();
+
+        TestObserver<Integer> to = as.test();
+
+        as.onNext(1);
+        as.onNext(null);
+        as.onComplete();
+
+        to.assertResult((Integer)null);
+    }
+
+    @Test
+    public void observeNullAfterCompletion() {
+        AsyncSubject<Integer> as = AsyncSubject.create();
+        as.onNext(1);
+        as.onNext(null);
+        as.onComplete();
+
+        as.test().assertResult((Integer)null);
     }
 }

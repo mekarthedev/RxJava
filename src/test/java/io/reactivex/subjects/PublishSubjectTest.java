@@ -687,4 +687,14 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 
         to.assertResult(1, 2);
     }
+
+    @Test
+    public void nulls() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        TestObserver<Integer> to = ps.test();
+
+        Observable.fromArray(1, null, 2, 3).subscribe(ps);
+
+        to.assertResult(1, null, 2, 3);
+    }
 }

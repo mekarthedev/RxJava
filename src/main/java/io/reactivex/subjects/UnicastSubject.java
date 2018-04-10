@@ -16,6 +16,7 @@ package io.reactivex.subjects;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 import java.util.concurrent.atomic.*;
@@ -331,11 +332,10 @@ public final class UnicastSubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (done || disposed) {
             return;
         }
-        queue.offer(t);
+        queue.offer(Null.wrap(t));
         drain();
     }
 
@@ -403,7 +403,7 @@ public final class UnicastSubject<T> extends Subject<T> {
                     break;
                 }
 
-                a.onNext(v);
+                a.onNext(Null.unwrap(v));
             }
 
             missed = wip.addAndGet(-missed);

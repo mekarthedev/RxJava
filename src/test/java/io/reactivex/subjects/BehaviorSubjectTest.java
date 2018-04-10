@@ -244,7 +244,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
-        BehaviorSubject<String> src = BehaviorSubject.createDefault("null"); // FIXME was plain null which is not allowed
+        BehaviorSubject<String> src = BehaviorSubject.createDefault(null);
 
         for (int i = 0; i < 10; i++) {
             final Observer<Object> o = TestHelper.mockObserver();
@@ -875,5 +875,28 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         bd.emitNext(3, 2);
 
         assertNotNull(bd.queue);
+    }
+
+    @Test
+    public void nullDefault() {
+        BehaviorSubject<Integer> bs = BehaviorSubject.createDefault(null);
+        bs.test().assertValuesOnly((Integer)null);
+    }
+
+    @Test
+    public void nulls() {
+        BehaviorSubject<Integer> bs = BehaviorSubject.create();
+        bs.onNext(1);
+        bs.onNext(null);
+
+        assertTrue(bs.hasValue());
+        assertNull(bs.getValue());
+        assertArrayEquals(new Integer[] { null, null, 0 }, bs.getValues(new Integer[] { 0, 0, 0 }));
+        assertFalse(bs.hasComplete());
+        assertFalse(bs.hasThrowable());
+
+        TestObserver<Integer> to = bs.test();
+        Observable.fromArray(2, null, 3, 4).subscribe(bs);
+        to.assertResult(null, 2, null, 3, 4);
     }
 }

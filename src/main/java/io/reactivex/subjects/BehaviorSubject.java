@@ -219,13 +219,12 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     /**
      * Constructs a BehaviorSubject with the given initial value.
-     * @param defaultValue the initial value, not null (verified)
-     * @throws NullPointerException if {@code defaultValue} is null
+     * @param defaultValue the initial value
      * @since 2.0
      */
     BehaviorSubject(T defaultValue) {
         this();
-        this.value.lazySet(ObjectHelper.requireNonNull(defaultValue, "defaultValue is null"));
+        this.value.lazySet(Null.wrap(defaultValue));
     }
 
     @Override
@@ -257,13 +256,11 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
-        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-
         if (terminalEvent.get() != null) {
             return;
         }
         Object o = NotificationLite.next(t);
-        setCurrent(o);
+        setCurrent(Null.wrap(o));
         for (BehaviorDisposable<T> bs : subscribers.get()) {
             bs.emitNext(o, index);
         }
@@ -324,7 +321,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
             return null;
         }
-        return NotificationLite.getValue(o);
+        return NotificationLite.getValue(Null.unwrap(o));
     }
 
     /**
@@ -360,7 +357,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
             }
             return array;
         }
-        T v = NotificationLite.getValue(o);
+        T v = NotificationLite.getValue(Null.unwrap(o));
         if (array.length != 0) {
             array[0] = v;
             if (array.length != 1) {
@@ -460,7 +457,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     void setCurrent(Object o) {
         writeLock.lock();
         index++;
-        value.lazySet(o);
+        value.lazySet(o);  // new value is expected to be already Null-wrapped.
         writeLock.unlock();
     }
 
@@ -524,7 +521,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
             }
 
             if (o != null) {
-                if (test(o)) {
+                if (test(Null.unwrap(o))) {
                     return;
                 }
 
