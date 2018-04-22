@@ -127,7 +127,7 @@ public final class Notification<T> {
      * @throws NullPointerException if value is null
      */
     @NonNull
-    public static <T> Notification<T> createOnNext(@NonNull T value) {
+    public static <T> Notification<T> createOnNext(T value) {
         return new Notification<T>(Null.wrap(value));
     }
 
