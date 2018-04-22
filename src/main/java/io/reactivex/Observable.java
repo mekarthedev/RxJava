@@ -12176,7 +12176,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             if (v == null) {
                 return empty();
             }
-            return ObservableScalarXMap.scalarXMap(v, mapper);
+            return ObservableScalarXMap.scalarXMap(Null.unwrap(v), mapper);
         }
         return RxJavaPlugins.onAssembly(new ObservableSwitchMap<T, R>(this, mapper, bufferSize, false));
     }
@@ -12454,7 +12454,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             if (v == null) {
                 return empty();
             }
-            return ObservableScalarXMap.scalarXMap(v, mapper);
+            return ObservableScalarXMap.scalarXMap(Null.unwrap(v), mapper);
         }
         return RxJavaPlugins.onAssembly(new ObservableSwitchMap<T, R>(this, mapper, bufferSize, true));
     }

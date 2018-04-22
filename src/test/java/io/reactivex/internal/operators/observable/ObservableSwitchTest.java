@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.internal.fuseable.QueueFuseable;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -1165,5 +1166,69 @@ public class ObservableSwitchTest {
         .assertFailure(TestException.class);
 
         assertFalse(ps.hasObservers());
+    }
+
+    @Test
+    public void scalarNull() {
+        Observable
+            .just((Integer)null)
+            .switchMap(new Function<Integer, ObservableSource<Integer>>() {
+                @Override
+                public ObservableSource<Integer> apply(Integer i) throws Exception {
+                    return Observable.just(i).hide();
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
+    public void nulls() {
+        Observable
+            .fromArray(1, null, 2, 3).hide()
+            .switchMap(new Function<Integer, ObservableSource<Integer>>() {
+                @Override
+                public ObservableSource<Integer> apply(Integer i) throws Exception {
+                    return Observable.just(i).hide();
+                }
+            })
+            .test()
+            .assertResult(1, null, 2, 3);
+    }
+
+    @Test
+    public void syncFusedInnerNulls() {
+        final TestFuseableObservable<Integer> inner = new TestFuseableObservable<Integer>(QueueFuseable.SYNC, 1, null, 2, 3);
+
+        Observable
+            .just(1).hide()
+            .switchMap(new Function<Integer, ObservableSource<Integer>>() {
+                @Override
+                public ObservableSource<Integer> apply(Integer i) throws Exception {
+                    return inner;
+                }
+            })
+            .test()
+            .assertResult(1, null, 2, 3);
+
+        inner.assertFusionMode(QueueFuseable.SYNC);
+    }
+
+    @Test
+    public void asyncFusedInnerNulls() {
+        final TestFuseableObservable<Integer> inner = new TestFuseableObservable<Integer>(QueueFuseable.ASYNC, 1, null, 2, 3);
+
+        Observable
+                .just(1).hide()
+                .switchMap(new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer i) throws Exception {
+                        return inner;
+                    }
+                })
+                .test()
+                .assertResult(1, null, 2, 3);
+
+        inner.assertFusionMode(QueueFuseable.ASYNC);
     }
 }

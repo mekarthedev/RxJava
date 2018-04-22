@@ -24,6 +24,7 @@ import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstream<T, R> {
@@ -294,7 +295,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                                 break;
                             }
 
-                            a.onNext(v);
+                            a.onNext(Null.unwrap(v));
                         }
 
                         if (retry) {
@@ -332,6 +333,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         final int bufferSize;
 
         volatile SimpleQueue<R> queue;
+        int fusionMode;
 
         volatile boolean done;
 
@@ -351,12 +353,14 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                     int m = qd.requestFusion(QueueDisposable.ANY);
                     if (m == QueueDisposable.SYNC) {
                         queue = qd;
+                        fusionMode = m;
                         done = true;
                         parent.drain();
                         return;
                     }
                     if (m == QueueDisposable.ASYNC) {
                         queue = qd;
+                        fusionMode = m;
                         return;
                     }
                 }
@@ -368,8 +372,8 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         @Override
         public void onNext(R t) {
             if (index == parent.unique) {
-                if (t != null) {
-                    queue.offer(t);
+                if (fusionMode == QueueDisposable.NONE) {
+                    queue.offer(Null.wrap(t));
                 }
                 parent.drain();
             }
