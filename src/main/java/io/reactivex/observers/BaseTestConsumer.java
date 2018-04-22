@@ -18,6 +18,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.Notification;
 import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
@@ -393,7 +394,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * @return this
      */
     @SuppressWarnings("unchecked")
-    public final U assertValue(Predicate<T> valuePredicate) {
+    public final U assertValue(@NonNull Predicate<T> valuePredicate) {
         assertValueAt(0, valuePredicate);
 
         if (values.size() > 1) {

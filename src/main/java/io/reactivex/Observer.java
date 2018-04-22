@@ -96,7 +96,7 @@ public interface Observer<T> {
      * @param t
      *          the item emitted by the Observable
      */
-    void onNext(@NonNull T t);
+    void onNext(T t);
 
     /**
      * Notifies the Observer that the {@link Observable} has experienced an error condition.

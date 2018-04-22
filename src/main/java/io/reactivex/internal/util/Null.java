@@ -13,6 +13,9 @@
 
 package io.reactivex.internal.util;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
+
 public enum Null {
     /**
      * Null-sentinel representing {@code null}-as-value.
@@ -28,11 +31,13 @@ public enum Null {
      */
     NULL;
 
-    public static <T> T wrap(T t) {
+    @NonNull
+    public static <T> T wrap(@Nullable T t) {
         return t != null ? t : (T)NULL;
     }
 
-    public static <T> T unwrap(T t) {
+    @Nullable
+    public static <T> T unwrap(@NonNull T t) {
         return t != (T)NULL ? t : null;
     }
 }

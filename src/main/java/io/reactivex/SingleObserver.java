@@ -71,7 +71,7 @@ public interface SingleObserver<T> {
      * @param t
      *          the item emitted by the Single
      */
-    void onSuccess(@NonNull T t);
+    void onSuccess(T t);
 
     /**
      * Notifies the SingleObserver that the {@link Single} has experienced an error condition.

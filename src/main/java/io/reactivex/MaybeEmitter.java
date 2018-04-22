@@ -53,7 +53,7 @@ public interface MaybeEmitter<T> {
      * Signal a success value.
      * @param t the value, not null
      */
-    void onSuccess(@NonNull T t);
+    void onSuccess(T t);
 
     /**
      * Signal an exception.

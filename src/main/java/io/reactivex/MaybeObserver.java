@@ -73,7 +73,7 @@ public interface MaybeObserver<T> {
      * @param t
      *          the item emitted by the Maybe
      */
-    void onSuccess(@NonNull T t);
+    void onSuccess(T t);
 
     /**
      * Notifies the MaybeObserver that the {@link Maybe} has experienced an error condition.
