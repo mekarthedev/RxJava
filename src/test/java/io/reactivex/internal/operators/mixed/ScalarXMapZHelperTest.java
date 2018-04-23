@@ -13,6 +13,18 @@
 
 package io.reactivex.internal.operators.mixed;
 
+import static org.junit.Assert.*;
+
+import io.reactivex.Completable;
+import io.reactivex.CompletableSource;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeSource;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
+import io.reactivex.observers.TestObserver;
 import org.junit.Test;
 
 import io.reactivex.TestHelper;
@@ -22,5 +34,53 @@ public class ScalarXMapZHelperTest {
     @Test
     public void utilityClass() {
         TestHelper.checkUtilityClass(ScalarXMapZHelper.class);
+    }
+
+    @Test
+    public void tryAsCompletableFromNull() {
+        TestObserver<Object> to = new TestObserver<Object>();
+        assertTrue(ScalarXMapZHelper.tryAsCompletable(
+                Observable.just(null),
+                new Function<Object, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(Object o) throws Exception {
+                        return o == null ? Completable.error(new TestException()) : Completable.complete();
+                    }
+                },
+                to
+        ));
+        to.assertError(TestException.class);
+    }
+
+    @Test
+    public void tryAsSingleFromNull() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        assertTrue(ScalarXMapZHelper.tryAsSingle(
+                Observable.just(null),
+                new Function<Object, SingleSource<Integer>>() {
+                    @Override
+                    public SingleSource<Integer> apply(Object o) throws Exception {
+                        return o == null ? Single.just(1) : Single.just(2);
+                    }
+                },
+                to
+        ));
+        to.assertResult(1);
+    }
+
+    @Test
+    public void tryAsMaybeFromNull() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        assertTrue(ScalarXMapZHelper.tryAsMaybe(
+                Observable.just(null),
+                new Function<Object, MaybeSource<Integer>>() {
+                    @Override
+                    public MaybeSource<Integer> apply(Object o) throws Exception {
+                        return o == null ? Maybe.just(1) : Maybe.just(2);
+                    }
+                },
+                to
+        ));
+        to.assertResult(1);
     }
 }

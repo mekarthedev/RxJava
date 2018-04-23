@@ -82,7 +82,7 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
             T v;
 
             try {
-                v = ObjectHelper.requireNonNull(valueSupplier.apply(e), "The valueSupplier returned a null value");
+                v = valueSupplier.apply(e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(new CompositeException(e, ex));

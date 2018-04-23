@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.maybe;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.internal.util.Null;
 import org.junit.Test;
 
 import io.reactivex.Maybe;
@@ -30,5 +31,19 @@ public class MaybeJustTest {
         assertTrue(m.getClass().toString(), m instanceof ScalarCallable);
 
         assertEquals(1, ((ScalarCallable<Integer>)m).call().intValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void scalarCallableJustNull() {
+        Maybe<Integer> m = Maybe.just(null);
+        assertTrue(m.getClass().toString(), m instanceof ScalarCallable);
+        assertSame(Null.NULL, ((ScalarCallable<Integer>)m).call());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void justNull() {
+        Maybe.just(null).test().assertResult((Object)null);
     }
 }

@@ -781,7 +781,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Maybe<T> just(T item) {
-        ObjectHelper.requireNonNull(item, "item is null");
         return RxJavaPlugins.onAssembly(new MaybeJust<T>(item));
     }
 
@@ -3601,7 +3600,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> onErrorReturnItem(final T item) {
-        ObjectHelper.requireNonNull(item, "item is null");
         return onErrorReturn(Functions.justFunction(item));
     }
 

@@ -145,6 +145,38 @@ public class MaybeOnErrorXTest {
     }
 
     @Test
+    public void onErrorReturnNull() {
+        Maybe
+            .error(new TestException())
+            .onErrorReturn(new Function<Throwable, Integer>() {
+                @Override
+                public Integer apply(Throwable throwable) throws Exception {
+                    return null;
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
+    public void onErrorReturnNullItem() {
+        Maybe
+            .error(new TestException())
+            .onErrorReturnItem(null)
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
+    public void onErrorResumeMaybeNull() {
+        Maybe
+            .error(new TestException())
+            .onErrorResumeNext(Maybe.just(null))
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
     public void onErrorReturnDispose() {
         TestHelper.checkDisposed(PublishProcessor.create().singleElement().onErrorReturnItem(1));
     }

@@ -171,11 +171,6 @@ public class MaybeTest {
         .assertResult(1);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void justNull() {
-        Maybe.just(null);
-    }
-
     @Test
     public void empty() {
         Maybe.empty()

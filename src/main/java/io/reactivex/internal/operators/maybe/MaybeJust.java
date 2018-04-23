@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.maybe;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.util.Null;
 
 /**
  * Signals a constant value.
@@ -38,6 +39,6 @@ public final class MaybeJust<T> extends Maybe<T> implements ScalarCallable<T> {
 
     @Override
     public T call() {
-        return value;
+        return Null.wrap(value);
     }
 }
