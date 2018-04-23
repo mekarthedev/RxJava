@@ -81,4 +81,36 @@ public class SingleOnErrorXTest {
         .test()
         .assertResult(1);
     }
+
+    @Test
+    public void returnNull() {
+        Single
+            .error(new TestException())
+            .onErrorReturn(new Function<Throwable, Integer>() {
+                @Override
+                public Integer apply(Throwable throwable) throws Exception {
+                    return null;
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
+    public void returnNullItem() {
+        Single
+            .error(new TestException())
+            .onErrorReturnItem(null)
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
+    public void resumeSingleNull() {
+        Single
+            .error(new TestException())
+            .onErrorResumeNext(Single.just(null))
+            .test()
+            .assertResult((Integer)null);
+    }
 }

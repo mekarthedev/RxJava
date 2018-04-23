@@ -599,5 +599,10 @@ public class SingleTest {
             }
         }.test();
     }
+
+    @Test
+    public void justNull() {
+        Single.just(null).test().assertResult((Object)null);
+    }
 }
 

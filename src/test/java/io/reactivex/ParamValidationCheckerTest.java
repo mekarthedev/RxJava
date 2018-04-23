@@ -512,6 +512,7 @@ public class ParamValidationCheckerTest {
 
         // null item values are allowed
         addIgnore(new ParamIgnore(Observable.class, "just", Object.class));
+        addIgnore(new ParamIgnore(Single.class, "just", Object.class));
         addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class));
         addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class));
         addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class, Object.class));
@@ -530,6 +531,7 @@ public class ParamValidationCheckerTest {
         addIgnore(new ParamIgnore(Observable.class, "blockingSingle", Object.class));
 
         addIgnore(new ParamIgnore(Observable.class, "onErrorReturnItem", Object.class));
+        addIgnore(new ParamIgnore(Single.class, "onErrorReturnItem", Object.class));
 
         // -----------------------------------------------------------------------------------
 

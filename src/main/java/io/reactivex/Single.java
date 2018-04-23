@@ -652,7 +652,6 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> just(final T item) {
-        ObjectHelper.requireNonNull(item, "value is null");
         return RxJavaPlugins.onAssembly(new SingleJust<T>(item));
     }
 
@@ -2803,7 +2802,6 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> onErrorReturnItem(final T value) {
-        ObjectHelper.requireNonNull(value, "value is null");
         return RxJavaPlugins.onAssembly(new SingleOnErrorReturn<T>(this, null, value));
     }
 

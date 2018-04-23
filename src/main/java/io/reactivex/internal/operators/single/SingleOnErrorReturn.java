@@ -64,13 +64,6 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
                 v = value;
             }
 
-            if (v == null) {
-                NullPointerException npe = new NullPointerException("Value supplied was null");
-                npe.initCause(e);
-                observer.onError(npe);
-                return;
-            }
-
             observer.onSuccess(v);
         }
 

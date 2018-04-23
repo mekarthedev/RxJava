@@ -231,11 +231,6 @@ public class SingleNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void justNull() {
-        Single.just(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void mergeIterableNull() {
         Single.merge((Iterable<Single<Integer>>)null);
     }
@@ -693,21 +688,6 @@ public class SingleNullTests {
     @Test(expected = NullPointerException.class)
     public void onErrorReturnSupplierNull() {
         just1.onErrorReturn((Function<Throwable, Integer>)null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onErrorReturnsSupplierReturnsNull() {
-        error.onErrorReturn(new Function<Throwable, Integer>() {
-            @Override
-            public Integer apply(Throwable t) throws Exception {
-                return null;
-            }
-        }).blockingGet();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onErrorReturnValueNull() {
-        error.onErrorReturnItem(null);
     }
 
     @Test(expected = NullPointerException.class)
