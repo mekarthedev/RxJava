@@ -44,16 +44,14 @@ public class SingleMapTest {
 
     @Test
     public void mapValueNull() {
-        Single.just(1).map(new Function<Integer, SingleSource<Integer>>() {
+        Single.just(1).map(new Function<Integer, Integer>() {
             @Override
-            public SingleSource<Integer> apply(final Integer integer) throws Exception {
+            public Integer apply(final Integer integer) throws Exception {
                 return null;
             }
         })
         .test()
-        .assertNoValues()
-        .assertError(NullPointerException.class)
-        .assertErrorMessage("The mapper function returned a null value.");
+        .assertResult((Integer)null);
     }
 
     @Test
