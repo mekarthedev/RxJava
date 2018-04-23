@@ -19,17 +19,25 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.FuseToObservable;
 
 import java.util.NoSuchElementException;
+
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableElementAtSingle<T> extends Single<T> implements FuseToObservable<T> {
     final ObservableSource<T> source;
     final long index;
-    final T defaultValue;
+    private final T defaultValue;
 
     public ObservableElementAtSingle(ObservableSource<T> source, long index, T defaultValue) {
         this.source = source;
         this.index = index;
-        this.defaultValue = defaultValue;
+        this.defaultValue = Null.wrap(defaultValue);
+    }
+
+    public ObservableElementAtSingle(ObservableSource<T> source, long index) {
+        this.source = source;
+        this.index = index;
+        this.defaultValue = null;
     }
 
     @Override
@@ -39,7 +47,12 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
 
     @Override
     public Observable<T> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(source, index, defaultValue, true));
+        T fallback = defaultValue;
+        if (fallback != null) {
+            return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(source, index, Null.unwrap(fallback)));
+        } else {
+            return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(source, index, true));
+        }
     }
 
     static final class ElementAtObserver<T> implements Observer<T>, Disposable {
@@ -112,7 +125,7 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
                 T v = defaultValue;
 
                 if (v != null) {
-                    actual.onSuccess(v);
+                    actual.onSuccess(Null.unwrap(v));
                 } else {
                     actual.onError(new NoSuchElementException());
                 }

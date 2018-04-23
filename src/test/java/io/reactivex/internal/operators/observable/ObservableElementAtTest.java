@@ -300,4 +300,46 @@ public class ObservableElementAtTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void elementAtSingleNullWithoutDefault() {
+        Observable.just(null).hide().elementAtOrError(0).test()
+                .assertResult((Integer)null);
+    }
+
+    @Test
+    public void elementAtSingleNullWithDefault() {
+        Observable.just(null).hide().elementAt(0, 1).test()
+                .assertResult((Integer)null);
+    }
+
+    @Test
+    public void elementAtSingleWithNullDefault() {
+        Observable.empty().hide().elementAt(0, null).test()
+                .assertResult((Integer)null);
+    }
+
+    @Test
+    public void fuseElementAtSingleWithNullDefaultToObservable() {
+        new ObservableElementAtSingle<Integer>(Observable.<Integer>empty(), 0, null)
+                .fuseToObservable().test().assertResult((Integer)null);
+    }
+
+    @Test
+    public void fuseElementAtSingleWithoutDefaultToObservableError() {
+        new ObservableElementAtSingle<Integer>(Observable.<Integer>empty(), 0)
+                .fuseToObservable().test().assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void elementAtMaybeNull() {
+        Observable.just(null).hide().elementAt(0).test()
+                .assertResult((Integer)null);
+    }
+
+    @Test
+    public void fuseElementAtMaybeToObservable() {
+        new ObservableElementAtMaybe<Integer>(Observable.<Integer>empty(), 0)
+                .fuseToObservable().test().assertResult();
+    }
 }

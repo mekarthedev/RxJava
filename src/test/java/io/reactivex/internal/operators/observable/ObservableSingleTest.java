@@ -505,8 +505,16 @@ public class ObservableSingleTest {
     }
 
     @Test
+    public void singleOrErrorOneNull() {
+        Observable.just(null)
+            .singleOrError()
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
     public void singleOrErrorMultipleElements() {
-        Observable.just(1, 2, 3)
+        Observable.just(1, null, 3)
             .singleOrError()
             .test()
             .assertNoValues()
@@ -564,5 +572,17 @@ public class ObservableSingleTest {
         .toObservable()
         .test()
         .assertFailure(NoSuchElementException.class);
+    }
+
+    @Test
+    public void singleNull() {
+        Observable.just(null).single(1).test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
+    public void singleWithNullDefault() {
+        Observable.empty().single(null).test()
+            .assertResult((Integer)null);
     }
 }

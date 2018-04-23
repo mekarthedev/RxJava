@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 import java.util.NoSuchElementException;
 
@@ -23,11 +24,16 @@ public final class ObservableSingleSingle<T> extends Single<T> {
 
     final ObservableSource<? extends T> source;
 
-    final T defaultValue;
+    private final T defaultValue;
 
     public ObservableSingleSingle(ObservableSource<? extends T> source, T defaultValue) {
         this.source = source;
-        this.defaultValue = defaultValue;
+        this.defaultValue = Null.wrap(defaultValue);
+    }
+
+    public ObservableSingleSingle(ObservableSource<? extends T> source) {
+        this.source = source;
+        this.defaultValue = null;
     }
 
     @Override
@@ -82,7 +88,7 @@ public final class ObservableSingleSingle<T> extends Single<T> {
                 actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
-            value = t;
+            value = Null.wrap(t);
         }
 
         @Override
@@ -108,7 +114,7 @@ public final class ObservableSingleSingle<T> extends Single<T> {
             }
 
             if (v != null) {
-                actual.onSuccess(v);
+                actual.onSuccess(Null.unwrap(v));
             } else {
                 actual.onError(new NoSuchElementException());
             }

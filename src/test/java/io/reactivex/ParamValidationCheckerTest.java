@@ -512,6 +512,24 @@ public class ParamValidationCheckerTest {
 
         // null item values are allowed
         addIgnore(new ParamIgnore(Observable.class, "just", Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class, Object.class, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class, Object.class, Object.class, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "just", Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class, Object.class));
+
+        addIgnore(new ParamIgnore(Observable.class, "elementAt", Long.TYPE, Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "first", Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "last", Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "single", Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "defaultIfEmpty", Object.class));
+        addIgnore(new ParamIgnore(Observable.class, "blockingSingle", Object.class));
+
+        addIgnore(new ParamIgnore(Observable.class, "onErrorReturnItem", Object.class));
 
         // -----------------------------------------------------------------------------------
 

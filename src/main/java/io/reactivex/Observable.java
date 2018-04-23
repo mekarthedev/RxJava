@@ -2290,9 +2290,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-
         return fromArray(item1, item2);
     }
 
@@ -2320,10 +2317,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-
         return fromArray(item1, item2, item3);
     }
 
@@ -2353,11 +2346,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-
         return fromArray(item1, item2, item3, item4);
     }
 
@@ -2389,12 +2377,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-
         return fromArray(item1, item2, item3, item4, item5);
     }
 
@@ -2428,13 +2410,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-
         return fromArray(item1, item2, item3, item4, item5, item6);
     }
 
@@ -2470,14 +2445,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-        ObjectHelper.requireNonNull(item7, "The seventh item is null");
-
         return fromArray(item1, item2, item3, item4, item5, item6, item7);
     }
 
@@ -2515,15 +2482,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-        ObjectHelper.requireNonNull(item7, "The seventh item is null");
-        ObjectHelper.requireNonNull(item8, "The eighth item is null");
-
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8);
     }
 
@@ -2563,16 +2521,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-        ObjectHelper.requireNonNull(item7, "The seventh item is null");
-        ObjectHelper.requireNonNull(item8, "The eighth item is null");
-        ObjectHelper.requireNonNull(item9, "The ninth item is null");
-
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9);
     }
 
@@ -2614,17 +2562,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> just(T item1, T item2, T item3, T item4, T item5, T item6, T item7, T item8, T item9, T item10) {
-        ObjectHelper.requireNonNull(item1, "The first item is null");
-        ObjectHelper.requireNonNull(item2, "The second item is null");
-        ObjectHelper.requireNonNull(item3, "The third item is null");
-        ObjectHelper.requireNonNull(item4, "The fourth item is null");
-        ObjectHelper.requireNonNull(item5, "The fifth item is null");
-        ObjectHelper.requireNonNull(item6, "The sixth item is null");
-        ObjectHelper.requireNonNull(item7, "The seventh item is null");
-        ObjectHelper.requireNonNull(item8, "The eighth item is null");
-        ObjectHelper.requireNonNull(item9, "The ninth item is null");
-        ObjectHelper.requireNonNull(item10, "The tenth item is null");
-
         return fromArray(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10);
     }
 
@@ -7250,7 +7187,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> defaultIfEmpty(T defaultItem) {
-        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
         return switchIfEmpty(just(defaultItem));
     }
 
@@ -8116,7 +8052,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
         return RxJavaPlugins.onAssembly(new ObservableElementAtSingle<T>(this, index, defaultItem));
     }
 
@@ -8144,7 +8079,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         if (index < 0) {
             throw new IndexOutOfBoundsException("index >= 0 required but it was " + index);
         }
-        return RxJavaPlugins.onAssembly(new ObservableElementAtSingle<T>(this, index, null));
+        return RxJavaPlugins.onAssembly(new ObservableElementAtSingle<T>(this, index));
     }
 
     /**
@@ -9332,7 +9267,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> last(T defaultItem) {
-        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
         return RxJavaPlugins.onAssembly(new ObservableLastSingle<T>(this, defaultItem));
     }
 
@@ -9353,7 +9287,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> lastOrError() {
-        return RxJavaPlugins.onAssembly(new ObservableLastSingle<T>(this, null));
+        return RxJavaPlugins.onAssembly(new ObservableLastSingle<T>(this));
     }
 
     /**
@@ -11375,7 +11309,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> single(T defaultItem) {
-        ObjectHelper.requireNonNull(defaultItem, "defaultItem is null");
         return RxJavaPlugins.onAssembly(new ObservableSingleSingle<T>(this, defaultItem));
     }
 
@@ -11397,7 +11330,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> singleOrError() {
-        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<T>(this, null));
+        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<T>(this));
     }
 
     /**

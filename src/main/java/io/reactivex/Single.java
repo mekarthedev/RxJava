@@ -627,7 +627,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> fromObservable(ObservableSource<? extends T> observableSource) {
         ObjectHelper.requireNonNull(observableSource, "observableSource is null");
-        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<T>(observableSource, null));
+        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<T>(observableSource));
     }
 
     /**

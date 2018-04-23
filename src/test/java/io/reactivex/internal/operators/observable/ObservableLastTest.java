@@ -279,8 +279,14 @@ public class ObservableLastTest {
     }
 
     @Test
+    public void lastOrErrorNullElement() {
+        Observable.just(null).lastOrError().test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
     public void lastOrErrorMultipleElements() {
-        Observable.just(1, 2, 3)
+        Observable.just(1, null, 3)
             .lastOrError()
             .test()
             .assertNoErrors()
@@ -295,6 +301,24 @@ public class ObservableLastTest {
             .assertNoValues()
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void lastNull() {
+        Observable.just(null).hide().last(1).test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
+    public void lastWithNullDefault() {
+        Observable.empty().hide().last(null).test()
+            .assertResult((Integer)null);
+    }
+
+    @Test
+    public void lastElementIsNull() {
+        Observable.just(null).hide().lastElement().test()
+            .assertResult((Integer)null);
     }
 
     @Test

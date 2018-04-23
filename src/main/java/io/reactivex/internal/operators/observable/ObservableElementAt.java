@@ -18,19 +18,28 @@ import java.util.NoSuchElementException;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableElementAt<T> extends AbstractObservableWithUpstream<T, T> {
     final long index;
-    final T defaultValue;
+    private final T defaultValue;
     final boolean errorOnFewer;
 
-    public ObservableElementAt(ObservableSource<T> source, long index, T defaultValue, boolean errorOnFewer) {
+    public ObservableElementAt(ObservableSource<T> source, long index, T defaultValue) {
         super(source);
         this.index = index;
-        this.defaultValue = defaultValue;
+        this.defaultValue = Null.wrap(defaultValue);
+        this.errorOnFewer = false;
+    }
+
+    public ObservableElementAt(ObservableSource<T> source, long index, boolean errorOnFewer) {
+        super(source);
+        this.index = index;
+        this.defaultValue = null;
         this.errorOnFewer = errorOnFewer;
     }
+
     @Override
     public void subscribeActual(Observer<? super T> t) {
         source.subscribe(new ElementAtObserver<T>(t, index, defaultValue, errorOnFewer));
@@ -110,7 +119,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
                     actual.onError(new NoSuchElementException());
                 } else {
                     if (v != null) {
-                        actual.onNext(v);
+                        actual.onNext(Null.unwrap(v));
                     }
                     actual.onComplete();
                 }

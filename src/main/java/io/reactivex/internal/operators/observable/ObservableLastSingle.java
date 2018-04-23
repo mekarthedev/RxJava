@@ -18,6 +18,7 @@ import java.util.NoSuchElementException;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 
 /**
  * Consumes the source ObservableSource and emits its last item, the defaultItem
@@ -29,11 +30,16 @@ public final class ObservableLastSingle<T> extends Single<T> {
 
     final ObservableSource<T> source;
 
-    final T defaultItem;
+    private final T defaultItem;
 
     public ObservableLastSingle(ObservableSource<T> source, T defaultItem) {
         this.source = source;
-        this.defaultItem = defaultItem;
+        this.defaultItem = Null.wrap(defaultItem);
+    }
+
+    public ObservableLastSingle(ObservableSource<T> source) {
+        this.source = source;
+        this.defaultItem = null;
     }
 
     // TODO fuse back to Observable
@@ -80,7 +86,7 @@ public final class ObservableLastSingle<T> extends Single<T> {
 
         @Override
         public void onNext(T t) {
-            item = t;
+            item = Null.wrap(t);
         }
 
         @Override
@@ -96,11 +102,11 @@ public final class ObservableLastSingle<T> extends Single<T> {
             T v = item;
             if (v != null) {
                 item = null;
-                actual.onSuccess(v);
+                actual.onSuccess(Null.unwrap(v));
             } else {
                 v = defaultItem;
                 if (v != null) {
-                    actual.onSuccess(v);
+                    actual.onSuccess(Null.unwrap(v));
                 } else {
                     actual.onError(new NoSuchElementException());
                 }

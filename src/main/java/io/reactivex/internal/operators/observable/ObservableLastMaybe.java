@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 
 /**
  * Consumes the source ObservableSource and emits its last item, the defaultItem
@@ -72,7 +73,7 @@ public final class ObservableLastMaybe<T> extends Maybe<T> {
 
         @Override
         public void onNext(T t) {
-            item = t;
+            item = Null.wrap(t);
         }
 
         @Override
@@ -88,7 +89,7 @@ public final class ObservableLastMaybe<T> extends Maybe<T> {
             T v = item;
             if (v != null) {
                 item = null;
-                actual.onSuccess(v);
+                actual.onSuccess(Null.unwrap(v));
             } else {
                 actual.onComplete();
             }

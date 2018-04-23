@@ -495,33 +495,6 @@ public class ObservableNullTests {
         Observable.intervalRange(1, 1, 1, 1, TimeUnit.SECONDS, null);
     }
 
-    @Test
-    public void justNull() throws Exception {
-        @SuppressWarnings("rawtypes")
-        Class<Observable> clazz = Observable.class;
-        for (int argCount = 2; argCount < 10; argCount++) {
-            for (int argNull = 1; argNull <= argCount; argNull++) {
-                Class<?>[] params = new Class[argCount];
-                Arrays.fill(params, Object.class);
-
-                Object[] values = new Object[argCount];
-                Arrays.fill(values, 1);
-                values[argNull - 1] = null;
-
-                Method m = clazz.getMethod("just", params);
-
-                try {
-                    m.invoke(null, values);
-                    Assert.fail("No exception for argCount " + argCount + " / argNull " + argNull);
-                } catch (InvocationTargetException ex) {
-                    if (!(ex.getCause() instanceof NullPointerException)) {
-                        Assert.fail("Unexpected exception for argCount " + argCount + " / argNull " + argNull + ": " + ex);
-                    }
-                }
-            }
-        }
-    }
-
     @Test(expected = NullPointerException.class)
     public void mergeIterableNull() {
         Observable.merge((Iterable<Observable<Object>>)null, 128, 128);
@@ -1031,11 +1004,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void defaultIfEmptyNull() {
-        just1.defaultIfEmpty(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void delayWithFunctionNull() {
         just1.delay(null);
     }
@@ -1230,11 +1198,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void elementAtNull() {
-        just1.elementAt(1, null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void filterNull() {
         just1.filter(null);
     }
@@ -1242,11 +1205,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void doAfterTerminateNull() {
         just1.doAfterTerminate(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void firstNull() {
-        just1.first(null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -1528,11 +1486,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void lastNull() {
-        just1.last(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void liftNull() {
         just1.lift(null);
     }
@@ -1590,21 +1543,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void onErrorReturnFunctionNull() {
         just1.onErrorReturn(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onErrorReturnValueNull() {
-        just1.onErrorReturnItem(null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void onErrorReturnFunctionReturnsNull() {
-        Observable.error(new TestException()).onErrorReturn(new Function<Throwable, Object>() {
-            @Override
-            public Object apply(Throwable e) {
-                return null;
-            }
-        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1973,11 +1911,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void singleNull() {
-        just1.single(null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void skipTimedUnitNull() {
         just1.skip(1, null, Schedulers.single());
     }
@@ -2025,11 +1958,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void startWithIterableOneNull() {
         just1.startWith(Arrays.asList(1, null)).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void startWithSingleNull() {
-        just1.startWith((Integer)null);
     }
 
     @Test(expected = NullPointerException.class)
