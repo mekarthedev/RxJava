@@ -77,13 +77,6 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
                 return;
             }
 
-            if (v == null) {
-                NullPointerException e = new NullPointerException("The supplied value is null");
-                e.initCause(t);
-                actual.onError(e);
-                return;
-            }
-
             actual.onNext(v);
             actual.onComplete();
         }

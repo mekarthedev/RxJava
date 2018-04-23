@@ -9832,7 +9832,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> onErrorReturnItem(final T item) {
-        ObjectHelper.requireNonNull(item, "item is null");
         return onErrorReturn(Functions.justFunction(item));
     }
 

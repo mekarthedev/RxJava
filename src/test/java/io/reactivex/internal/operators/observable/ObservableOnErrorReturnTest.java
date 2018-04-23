@@ -222,6 +222,29 @@ public class ObservableOnErrorReturnTest {
     }
 
     @Test
+    public void returnNull() {
+        Observable
+            .fromArray(1, null, 2).concatWith(Observable.<Integer>error(new TestException()))
+            .onErrorReturn(new Function<Throwable, Integer>() {
+                @Override
+                public Integer apply(Throwable throwable) throws Exception {
+                    return null;
+                }
+            })
+            .test()
+            .assertResult(1, null, 2, null);
+    }
+
+    @Test
+    public void returnNullItem() {
+        Observable
+            .fromArray(1, null, 2).concatWith(Observable.<Integer>error(new TestException()))
+            .onErrorReturnItem((Integer)null)
+            .test()
+            .assertResult(1, null, 2, null);
+    }
+
+    @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.just(1).onErrorReturnItem(1));
     }
