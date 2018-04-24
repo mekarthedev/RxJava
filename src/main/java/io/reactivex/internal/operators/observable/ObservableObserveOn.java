@@ -22,6 +22,7 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.schedulers.TrampolineScheduler;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream<T, T> {
@@ -114,7 +115,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             }
 
             if (sourceMode != QueueDisposable.ASYNC) {
-                queue.offer(t);
+                queue.offer(Null.wrap(t));
             }
             schedule();
         }
@@ -197,7 +198,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                         break;
                     }
 
-                    a.onNext(v);
+                    a.onNext(Null.unwrap(v));
                 }
 
                 missed = addAndGet(-missed);

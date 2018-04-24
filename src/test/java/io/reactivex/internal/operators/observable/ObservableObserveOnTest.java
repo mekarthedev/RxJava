@@ -743,4 +743,44 @@ public class ObservableObserveOnTest {
         })
         .assertValuesOnly(2, 3);
     }
+
+    @Test
+    public void drainNormalNull() {
+        Observable
+            .fromArray(1, null, 2, 3).hide()
+            .observeOn(Schedulers.single())
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, null, 2, 3);
+    }
+
+    @Test
+    public void drainFusedNull() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+
+        Observable
+            .fromArray(1, null, 2, 3).hide()
+            .observeOn(Schedulers.single())
+            .subscribe(to);
+
+        ObserverFusion
+            .assertFusion(to, QueueFuseable.ASYNC)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, null, 2, 3);
+    }
+
+    @Test
+    public void drainFusedThroughNull() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+
+        Observable
+            .fromArray(1, null, 2, 3)
+            .observeOn(Schedulers.single())
+            .subscribe(to);
+
+        ObserverFusion
+            .assertFusion(to, QueueFuseable.ASYNC)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, null, 2, 3);
+    }
 }
