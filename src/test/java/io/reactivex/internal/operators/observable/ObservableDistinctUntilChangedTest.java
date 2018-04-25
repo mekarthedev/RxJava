@@ -13,12 +13,18 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import io.reactivex.internal.functions.ObjectHelper;
 import org.junit.*;
 import org.mockito.InOrder;
 
@@ -108,7 +114,6 @@ public class ObservableDistinctUntilChangedTest {
     }
 
     @Test
-    @Ignore("Null values no longer allowed")
     public void testDistinctUntilChangedOfSourceWithNulls() {
         Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null, null);
         src.distinctUntilChanged().subscribe(w);
@@ -125,7 +130,6 @@ public class ObservableDistinctUntilChangedTest {
     }
 
     @Test
-    @Ignore("Null values no longer allowed")
     public void testDistinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
         Observable<String> src = Observable.just("a", "b", null, "c");
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
@@ -177,6 +181,41 @@ public class ObservableDistinctUntilChangedTest {
     }
 
     @Test
+    public void nullKey() {
+        final List<Integer> requestedKeys = new ArrayList<Integer>(10);
+        Observable
+            .fromArray(1, null, 2, 2, null, null, 3, 3, 4, 5).hide()
+            .distinctUntilChanged(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer i) throws Exception {
+                    requestedKeys.add(i);
+                    return i;
+                }
+            })
+            .test()
+            .assertResult(1, null, 2, null, 3, 4, 5);
+        assertEquals(requestedKeys, Arrays.asList(1, null, 2, 2, null, null, 3, 3, 4, 5));
+    }
+
+    @Test
+    public void predicateWithNullArguments() {
+        final Set<Integer> testedValues = new HashSet<Integer>();
+        Observable
+            .fromArray(1, null, 2, 2, null, null, 3, 3, 4, 5).hide()
+            .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                @Override
+                public boolean test(Integer lhs, Integer rhs) throws Exception {
+                    testedValues.add(lhs);
+                    testedValues.add(rhs);
+                    return ObjectHelper.equals(lhs, rhs);
+                }
+            })
+            .test()
+            .assertResult(1, null, 2, null, 3, 4, 5);
+        assertEquals(testedValues, new HashSet<Integer>(Arrays.asList(1, null, 2, 3, 4, 5)));
+    }
+
+    @Test
     public void fused() {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
@@ -216,6 +255,49 @@ public class ObservableDistinctUntilChangedTest {
         .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1, 2, 3, 4, 5)
         ;
+    }
+
+    @Test
+    public void fusedNullKey() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        final List<Integer> requestedKeys = new ArrayList<Integer>(10);
+
+        Observable
+            .fromArray(1, null, 2, 2, null, null, 3, 3, 4, 5)
+            .distinctUntilChanged(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer i) throws Exception {
+                    requestedKeys.add(i);
+                    return i;
+                }
+            })
+            .subscribe(to);
+
+        to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.SYNC));
+        to.assertResult(1, null, 2, null, 3, 4, 5);
+        assertEquals(requestedKeys, Arrays.asList(1, null, 2, 2, null, null, 3, 3, 4, 5));
+    }
+
+    @Test
+    public void fusedPredicateWithNullArguments() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        final Set<Integer> testedValues = new HashSet<Integer>();
+
+        Observable
+            .fromArray(1, null, 2, 2, null, null, 3, 3, 4, 5)
+            .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
+                @Override
+                public boolean test(Integer lhs, Integer rhs) throws Exception {
+                    testedValues.add(lhs);
+                    testedValues.add(rhs);
+                    return ObjectHelper.equals(lhs, rhs);
+                }
+            })
+            .subscribe(to);
+
+        to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.SYNC));
+        to.assertResult(1, null, 2, null, 3, 4, 5);
+        assertEquals(testedValues, new HashSet<Integer>(Arrays.asList(1, null, 2, 3, 4, 5)));
     }
 
     @Test

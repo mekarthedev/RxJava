@@ -17,6 +17,7 @@ import io.reactivex.*;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.observers.BasicFuseableObserver;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservableWithUpstream<T, T> {
 
@@ -98,7 +99,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
                 if (v == null) {
                     return null;
                 }
-                K key = keySelector.apply(v);
+                K key = keySelector.apply(Null.unwrap(v));
                 if (!hasValue) {
                     hasValue = true;
                     last = key;

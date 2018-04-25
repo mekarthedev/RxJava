@@ -23,6 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.BasicFuseableObserver;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstream<T, T> {
@@ -74,7 +75,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
                 boolean b;
 
                 try {
-                    key = ObjectHelper.requireNonNull(keySelector.apply(value), "The keySelector returned a null key");
+                    key = keySelector.apply(value);
                     b = collection.add(key);
                 } catch (Throwable ex) {
                     fail(ex);
@@ -120,7 +121,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             for (;;) {
                 T v = qs.poll();
 
-                if (v == null || collection.add(ObjectHelper.requireNonNull(keySelector.apply(v), "The keySelector returned a null key"))) {
+                if (v == null || collection.add(keySelector.apply(Null.unwrap(v)))) {
                     return v;
                 }
             }

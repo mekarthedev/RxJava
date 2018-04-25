@@ -1115,16 +1115,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void distinctFunctionReturnsNull() {
-        just1.distinct(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void distinctUntilChangedFunctionNull() {
         just1.distinctUntilChanged((Function<Object, Object>)null);
     }

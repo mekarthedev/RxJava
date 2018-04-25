@@ -50,6 +50,43 @@ public class ObservableDistinctTest {
         }
     };
 
+    private static class TestDistinctor<T> {
+        private Set<T> requestedKeys = new HashSet<T>();
+        private Set<T> fulfiledCollection;
+
+        Function<T, T> identity() {
+            return new Function<T, T>() {
+                @Override
+                public T apply(T t) throws Exception {
+                    requestedKeys.add(t);
+                    return t;
+                }
+            };
+        }
+
+        Callable<Collection<T>> hashSet() {
+            return new Callable<Collection<T>>() {
+                @Override
+                public Collection<T> call() throws Exception {
+                    fulfiledCollection = new HashSet<T>();
+                    return new HashSet<T>() {
+                        @Override
+                        public boolean add(T t) {
+                            fulfiledCollection.add(t);
+                            return super.add(t);
+                        }
+                    };
+                }
+            };
+        }
+
+        void assertValues(T... values) {
+            Set<T> expectedKeys = new HashSet<T>(Arrays.asList(values));
+            assertEquals("requested keys", expectedKeys, requestedKeys);
+            assertEquals("collection", expectedKeys, fulfiledCollection);
+        }
+    }
+
     @Before
     public void before() {
         w = TestHelper.mockObserver();
@@ -106,7 +143,6 @@ public class ObservableDistinctTest {
     }
 
     @Test
-    @Ignore("Null values no longer allowed")
     public void testDistinctOfSourceWithNulls() {
         Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null);
         src.distinct().subscribe(w);
@@ -121,7 +157,6 @@ public class ObservableDistinctTest {
     }
 
     @Test
-    @Ignore("Null values no longer allowed")
     public void testDistinctOfSourceWithExceptionsFromKeySelector() {
         Observable<String> src = Observable.just("a", "b", null, "c");
         src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
@@ -143,31 +178,46 @@ public class ObservableDistinctTest {
     }
 
     @Test
+    public void nullKey() {
+        TestDistinctor<Integer> distinctor = new TestDistinctor<Integer>();
+        Observable
+            .fromArray(1, 1, null, 2, 1, 3, 2, 4, null, 5, 4).hide()
+            .distinct(distinctor.identity(), distinctor.hashSet())
+            .test()
+            .assertResult(1, null, 2, 3, 4, 5);
+        distinctor.assertValues(1, null, 2, 3, 4, 5);
+    }
+
+    @Test
     public void fusedSync() {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestDistinctor<Integer> distinctor = new TestDistinctor<Integer>();
 
-        Observable.just(1, 1, 2, 1, 3, 2, 4, 5, 4)
-        .distinct()
+        Observable.fromArray(1, 1, null, 2, 1, 3, 2, 4, null, 5, 4)
+        .distinct(distinctor.identity(), distinctor.hashSet())
         .subscribe(to);
 
         ObserverFusion.assertFusion(to, QueueFuseable.SYNC)
-        .assertResult(1, 2, 3, 4, 5);
+        .assertResult(1, null, 2, 3, 4, 5);
+        distinctor.assertValues(1, null, 2, 3, 4, 5);
     }
 
     @Test
     public void fusedAsync() {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        TestDistinctor<Integer> distinctor = new TestDistinctor<Integer>();
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
         us
-        .distinct()
+        .distinct(distinctor.identity(), distinctor.hashSet())
         .subscribe(to);
 
-        TestHelper.emit(us, 1, 1, 2, 1, 3, 2, 4, 5, 4);
+        TestHelper.emit(us, 1, 1, null, 2, 1, 3, 2, 4, null, 5, 4);
 
         ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
-        .assertResult(1, 2, 3, 4, 5);
+        .assertResult(1, null, 2, 3, 4, 5);
+        distinctor.assertValues(1, null, 2, 3, 4, 5);
     }
 
     @Test
