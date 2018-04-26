@@ -304,18 +304,6 @@ public class ObservableNullTests {
         Observable.fromFuture(null);
     }
 
-    @Test
-    public void fromFutureReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
-        f.run();
-
-        TestObserver<Object> to = new TestObserver<Object>();
-        Observable.fromFuture(f).subscribe(to);
-        to.assertNoValues();
-        to.assertNotComplete();
-        to.assertError(NullPointerException.class);
-    }
-
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedFutureNull() {
         Observable.fromFuture(null, 1, TimeUnit.SECONDS);
@@ -329,13 +317,6 @@ public class ObservableNullTests {
     @Test(expected = NullPointerException.class)
     public void fromFutureTimedSchedulerNull() {
         Observable.fromFuture(new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null), 1, TimeUnit.SECONDS, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void fromFutureTimedReturnsNull() {
-        FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
-        f.run();
-        Observable.fromFuture(f, 1, TimeUnit.SECONDS).blockingLast();
     }
 
     @Test(expected = NullPointerException.class)

@@ -38,7 +38,7 @@ public final class ObservableFromFuture<T> extends Observable<T> {
         if (!d.isDisposed()) {
             T v;
             try {
-                v = ObjectHelper.requireNonNull(unit != null ? future.get(timeout, unit) : future.get(), "Future returned null");
+                v = unit != null ? future.get(timeout, unit) : future.get();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 if (!d.isDisposed()) {
