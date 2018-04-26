@@ -234,6 +234,46 @@ public class ObservableScanTest {
     }
 
     @Test
+    public void nullWithSeed() {
+        final TestObserver<Integer> testedValues = new TestObserver<Integer>();
+        final TestObserver<Integer> accumulators = new TestObserver<Integer>();
+        Observable
+            .fromArray(1, null, 2, 3, 4)
+            .scan(null, new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer accum, Integer next) throws Exception {
+                    accumulators.onNext(accum);
+                    testedValues.onNext(next);
+                    return next == null ? Integer.valueOf(-1) : (next == 2 ? null : next*10);
+                }
+            })
+            .test()
+            .assertResult(null, 10, -1, null, 30, 40);
+        testedValues.assertValues(1, null, 2, 3, 4);
+        accumulators.assertValues(null, 10, -1, null, 30);
+    }
+
+    @Test
+    public void nullWithoutSeed() {
+        final TestObserver<Integer> testedValues = new TestObserver<Integer>();
+        final TestObserver<Integer> accumulators = new TestObserver<Integer>();
+        Observable
+            .fromArray(1, null, 2, 3, 4)
+            .scan(new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer accum, Integer next) throws Exception {
+                    accumulators.onNext(accum);
+                    testedValues.onNext(next);
+                    return next == null ? Integer.valueOf(-1) : (next == 2 ? null : next*10);
+                }
+            })
+            .test()
+            .assertResult(1, -1, null, 30, 40);
+        testedValues.assertValues(null, 2, 3, 4);
+        accumulators.assertValues(1, -1, null, 30);
+    }
+
+    @Test
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.create().scan(new BiFunction<Object, Object, Object>() {
             @Override

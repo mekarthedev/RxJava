@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T> {
@@ -39,7 +39,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
         Disposable s;
 
-        T value;
+        private T value;
 
         boolean done;
 
@@ -76,13 +76,13 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
             final Observer<? super T> a = actual;
             T v = value;
             if (v == null) {
-                value = t;
+                value = Null.wrap(t);
                 a.onNext(t);
             } else {
                 T u;
 
                 try {
-                    u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
+                    u = accumulator.apply(Null.unwrap(v), t);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.dispose();
@@ -90,7 +90,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                     return;
                 }
 
-                value = u;
+                value = Null.wrap(u);
                 a.onNext(u);
             }
         }

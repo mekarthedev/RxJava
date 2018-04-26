@@ -37,7 +37,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
         R r;
 
         try {
-            r = ObjectHelper.requireNonNull(seedSupplier.call(), "The seed supplied is null");
+            r = seedSupplier.call();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             EmptyDisposable.error(e, t);
@@ -96,7 +96,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             R u;
 
             try {
-                u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
+                u = accumulator.apply(v, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.dispose();

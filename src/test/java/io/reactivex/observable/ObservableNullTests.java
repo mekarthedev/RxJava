@@ -1816,38 +1816,8 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void scanFunctionReturnsNull() {
-        Observable.just(1, 1).scan(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void scanSeedNull() {
-        just1.scan(null, new BiFunction<Object, Integer, Object>() {
-            @Override
-            public Object apply(Object a, Integer b) {
-                return 1;
-            }
-        });
-    }
-
-    @Test(expected = NullPointerException.class)
     public void scanSeedFunctionNull() {
         just1.scan(1, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void scanSeedFunctionReturnsNull() {
-        just1.scan(1, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1861,21 +1831,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void scanSeedSupplierReturnsNull() {
-        just1.scanWith(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return null;
-            }
-        }, new BiFunction<Object, Integer, Object>() {
-            @Override
-            public Object apply(Object a, Integer b) {
-                return 1;
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void scanSeedSupplierFunctionNull() {
         just1.scanWith(new Callable<Object>() {
             @Override
@@ -1883,21 +1838,6 @@ public class ObservableNullTests {
                 return 1;
             }
         }, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void scanSeedSupplierFunctionReturnsNull() {
-        just1.scanWith(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return 1;
-            }
-        }, new BiFunction<Object, Integer, Object>() {
-            @Override
-            public Object apply(Object a, Integer b) {
-                return null;
-            }
-        }).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
