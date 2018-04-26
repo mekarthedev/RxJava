@@ -510,7 +510,8 @@ public class ParamValidationCheckerTest {
 
         addIgnore(new ParamIgnore(Completable.class, "unsafeCreate", CompletableSource.class));
 
-        // null item values are allowed
+        // null values are allowed
+
         addIgnore(new ParamIgnore(Observable.class, "just", Object.class));
         addIgnore(new ParamIgnore(Single.class, "just", Object.class));
         addIgnore(new ParamIgnore(Maybe.class, "just", Object.class));
@@ -534,6 +535,9 @@ public class ParamValidationCheckerTest {
         addIgnore(new ParamIgnore(Observable.class, "onErrorReturnItem", Object.class));
         addIgnore(new ParamIgnore(Single.class, "onErrorReturnItem", Object.class));
         addIgnore(new ParamIgnore(Maybe.class, "onErrorReturnItem", Object.class));
+
+        addIgnore(new ParamIgnore(Observable.class, "reduce", Object.class, BiFunction.class));
+        addIgnore(new ParamIgnore(Observable.class, "scan", Object.class, BiFunction.class));
 
         // -----------------------------------------------------------------------------------
 
