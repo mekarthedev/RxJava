@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -51,7 +51,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
         boolean done;
 
-        T value;
+        private T value;
 
         Disposable d;
 
@@ -75,10 +75,10 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
                 T v = this.value;
 
                 if (v == null) {
-                    this.value = value;
+                    this.value = Null.wrap(value);
                 } else {
                     try {
-                        this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                        this.value = Null.wrap(reducer.apply(Null.unwrap(v), value));
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         d.dispose();
@@ -108,7 +108,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
             T v = value;
             value = null;
             if (v != null) {
-                actual.onSuccess(v);
+                actual.onSuccess(Null.unwrap(v));
             } else {
                 actual.onComplete();
             }

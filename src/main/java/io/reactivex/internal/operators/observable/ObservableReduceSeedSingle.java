@@ -18,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -53,13 +53,13 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
 
         final BiFunction<R, ? super T, R> reducer;
 
-        R value;
+        private R value;
 
         Disposable d;
 
         ReduceSeedObserver(SingleObserver<? super R> actual, BiFunction<R, ? super T, R> reducer, R value) {
             this.actual = actual;
-            this.value = value;
+            this.value = Null.wrap(value);
             this.reducer = reducer;
         }
 
@@ -77,7 +77,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
             R v = this.value;
             if (v != null) {
                 try {
-                    this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                    this.value = Null.wrap(reducer.apply(Null.unwrap(v), value));
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     d.dispose();
@@ -102,7 +102,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
             R v = value;
             if (v != null) {
                 value = null;
-                actual.onSuccess(v);
+                actual.onSuccess(Null.unwrap(v));
             }
         }
 

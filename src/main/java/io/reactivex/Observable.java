@@ -10028,7 +10028,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
-        ObjectHelper.requireNonNull(seed, "seed is null");
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaPlugins.onAssembly(new ObservableReduceSeedSingle<T, R>(this, seed, reducer));
     }

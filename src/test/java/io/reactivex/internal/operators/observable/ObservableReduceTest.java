@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import io.reactivex.observers.TestObserver;
 import org.junit.*;
 
 import io.reactivex.*;
@@ -257,6 +258,68 @@ public class ObservableReduceTest {
         })
         .test()
         .assertResult(15);
+    }
+
+    @Test
+    public void reduceWithSingleNull() {
+        final TestObserver<Integer> accumulators = new TestObserver<Integer>();
+        final TestObserver<Integer> testedValues = new TestObserver<Integer>();
+        Observable.fromArray(1, null, 2)
+            .reduceWith(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    return null;
+                }
+            }, new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer accum, Integer next) throws Exception {
+                    accumulators.onNext(accum);
+                    testedValues.onNext(next);
+                    return next == null ? Integer.valueOf(-1) : (next == 2 ? null : next*10);
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+        accumulators.assertValues(null, 10, -1);
+        testedValues.assertValues(1, null, 2);
+    }
+
+    @Test
+    public void reduceNullSeed() {
+        final TestObserver<Integer> accumulators = new TestObserver<Integer>();
+        final TestObserver<Integer> testedValues = new TestObserver<Integer>();
+        Observable.fromArray(1, null, 2)
+            .reduce(null, new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer accum, Integer next) throws Exception {
+                    accumulators.onNext(accum);
+                    testedValues.onNext(next);
+                    return next == null ? Integer.valueOf(-1) : (next == 2 ? null : next*10);
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+        accumulators.assertValues(null, 10, -1);
+        testedValues.assertValues(1, null, 2);
+    }
+
+    @Test
+    public void reduceNulls() {
+        final TestObserver<Integer> accumulators = new TestObserver<Integer>();
+        final TestObserver<Integer> testedValues = new TestObserver<Integer>();
+        Observable.fromArray(1, null, 2)
+            .reduce(new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer accum, Integer next) throws Exception {
+                    accumulators.onNext(accum);
+                    testedValues.onNext(next);
+                    return next == null ? Integer.valueOf(-1) : (next == 2 ? null : next*10);
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+        accumulators.assertValues(1, -1);
+        testedValues.assertValues(null, 2);
     }
 
     @Test

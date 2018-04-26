@@ -48,7 +48,7 @@ public final class ObservableReduceWithSingle<T, R> extends Single<R> {
         R seed;
 
         try {
-            seed = ObjectHelper.requireNonNull(seedSupplier.call(), "The seedSupplier returned a null value");
+            seed = seedSupplier.call();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             EmptyDisposable.error(ex, observer);

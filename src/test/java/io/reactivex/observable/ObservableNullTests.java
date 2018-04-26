@@ -1561,38 +1561,8 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void reduceFunctionReturnsNull() {
-        Observable.just(1, 1).reduce(new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingGet();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void reduceSeedNull() {
-        just1.reduce(null, new BiFunction<Object, Integer, Object>() {
-            @Override
-            public Object apply(Object a, Integer b) {
-                return 1;
-            }
-        });
-    }
-
-    @Test(expected = NullPointerException.class)
     public void reduceSeedFunctionNull() {
         just1.reduce(1, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void reduceSeedFunctionReturnsNull() {
-        just1.reduce(1, new BiFunction<Integer, Integer, Integer>() {
-            @Override
-            public Integer apply(Integer a, Integer b) {
-                return null;
-            }
-        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
@@ -1603,21 +1573,6 @@ public class ObservableNullTests {
                 return 1;
             }
         });
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void reduceWithSeedReturnsNull() {
-        just1.reduceWith(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return null;
-            }
-        }, new BiFunction<Object, Integer, Object>() {
-            @Override
-            public Object apply(Object a, Integer b) {
-                return 1;
-            }
-        }).blockingGet();
     }
 
     @Test(expected = NullPointerException.class)
