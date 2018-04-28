@@ -367,6 +367,104 @@ public class ObservableSampleTest {
     }
 
     @Test
+    public void sampleNullsEmittingLast() {
+        PublishSubject<Integer> src = PublishSubject.create();
+        PublishSubject<Void> sampler = PublishSubject.create();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        src.sample(sampler, true).subscribe(to);
+
+        src.onNext(null);
+        sampler.onNext(null);
+        to.assertValues((Integer)null).assertNotTerminated();
+
+        src.onNext(null);
+        sampler.onNext(null);
+        to.assertValues(null, null).assertNotTerminated();
+
+        src.onNext(null);
+        src.onNext(1);
+        sampler.onNext(null);
+        to.assertValues(null, null, 1).assertNotTerminated();
+
+        src.onNext(null);
+        src.onComplete();
+        to.assertResult(null, null, 1, null);
+    }
+
+    @Test
+    public void sampleNullsWithoutLast() {
+        PublishSubject<Integer> src = PublishSubject.create();
+        PublishSubject<Void> sampler = PublishSubject.create();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        src.sample(sampler).subscribe(to);
+
+        src.onNext(null);
+        sampler.onNext(null);
+        to.assertValues((Integer)null).assertNotTerminated();
+
+        src.onNext(null);
+        sampler.onNext(null);
+        to.assertValues(null, null).assertNotTerminated();
+
+        src.onNext(null);
+        src.onNext(1);
+        sampler.onNext(null);
+        to.assertValues(null, null, 1).assertNotTerminated();
+
+        src.onNext(null);
+        src.onComplete();
+        to.assertResult(null, null, 1);
+    }
+
+    @Test
+    public void sampleTimedNullsEmittingLast() {
+        PublishSubject<Integer> src = PublishSubject.create();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        src.sample(100L, TimeUnit.MILLISECONDS, scheduler, true).subscribe(to);
+
+        src.onNext(null);
+        scheduler.advanceTimeBy(100L, TimeUnit.MILLISECONDS);
+        to.assertValues((Integer)null).assertNotTerminated();
+
+        src.onNext(null);
+        scheduler.advanceTimeBy(100L, TimeUnit.MILLISECONDS);
+        to.assertValues(null, null).assertNotTerminated();
+
+        src.onNext(null);
+        src.onNext(1);
+        scheduler.advanceTimeBy(100L, TimeUnit.MILLISECONDS);
+        to.assertValues(null, null, 1).assertNotTerminated();
+
+        src.onNext(null);
+        src.onComplete();
+        to.assertResult(null, null, 1, null);
+    }
+
+    @Test
+    public void sampleTimedNullsWithoutLast() {
+        PublishSubject<Integer> src = PublishSubject.create();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        src.sample(100L, TimeUnit.MILLISECONDS, scheduler).subscribe(to);
+
+        src.onNext(null);
+        scheduler.advanceTimeBy(100L, TimeUnit.MILLISECONDS);
+        to.assertValues((Integer)null).assertNotTerminated();
+
+        src.onNext(null);
+        scheduler.advanceTimeBy(100L, TimeUnit.MILLISECONDS);
+        to.assertValues(null, null).assertNotTerminated();
+
+        src.onNext(null);
+        src.onNext(1);
+        scheduler.advanceTimeBy(100L, TimeUnit.MILLISECONDS);
+        to.assertValues(null, null, 1).assertNotTerminated();
+
+        src.onNext(null);
+        src.onComplete();
+        to.assertResult(null, null, 1);
+    }
+
+    @Test
     public void emitLastOtherRunCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();

@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstream<T, T> {
@@ -80,7 +81,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
         @Override
         public void onNext(T t) {
-            lazySet(t);
+            lazySet(Null.wrap(t));
         }
 
         @Override
@@ -113,7 +114,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
         void emit() {
             T value = getAndSet(null);
             if (value != null) {
-                actual.onNext(value);
+                actual.onNext(Null.unwrap(value));
             }
         }
 
