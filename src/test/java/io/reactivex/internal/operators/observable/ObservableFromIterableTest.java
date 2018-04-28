@@ -349,4 +349,25 @@ public class ObservableFromIterableTest {
             }
         });
     }
+
+    @Test
+    public void nullValues() {
+        Observable
+            .fromIterable(Arrays.asList(1, null, 2, 3))
+            .test()
+            .assertResult(1, null, 2, 3);
+    }
+
+    @Test
+    public void nullValuesFusion() {
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+
+        Observable
+            .fromIterable(Arrays.asList(1, null, 2, 3))
+            .subscribe(to);
+
+        ObserverFusion
+            .assertFusion(to, QueueFuseable.SYNC)
+            .assertResult(1, null, 2, 3);
+    }
 }

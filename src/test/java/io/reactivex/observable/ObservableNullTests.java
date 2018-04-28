@@ -341,11 +341,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void fromIterableValueNull() {
-        Observable.fromIterable(Arrays.asList(1, null)).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void generateConsumerNull() {
         Observable.generate(null);
     }
@@ -1819,11 +1814,6 @@ public class ObservableNullTests {
                 return null;
             }
         }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void startWithIterableOneNull() {
-        just1.startWith(Arrays.asList(1, null)).blockingSubscribe();
     }
 
     @Test(expected = NullPointerException.class)
