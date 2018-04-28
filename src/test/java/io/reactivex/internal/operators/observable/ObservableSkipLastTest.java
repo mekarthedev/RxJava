@@ -80,7 +80,6 @@ public class ObservableSkipLastTest {
     }
 
     @Test
-    @Ignore("Null values not allowed")
     public void testSkipLastWithNull() {
         Observable<String> o = Observable.fromIterable(Arrays.asList("one", null, "two")).skipLast(1);
 
@@ -107,6 +106,15 @@ public class ObservableSkipLastTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void testSkipLastWithNegativeCount() {
         Observable.just("one").skipLast(-1);
+    }
+
+    @Test
+    public void skipLastNulls() {
+        Observable
+            .fromArray(null, 1, null, 2, 3)
+            .skipLast(2)
+            .test()
+            .assertResult(null, 1, null);
     }
 
     @Test

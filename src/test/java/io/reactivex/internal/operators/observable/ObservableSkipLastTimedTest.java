@@ -227,6 +227,25 @@ public class ObservableSkipLastTimedTest {
     }
 
     @Test
+    public void skipLastNulls() {
+        PublishSubject<Integer> src = PublishSubject.create();
+        TestScheduler scheduler = new TestScheduler();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+
+        src.skipLast(2, TimeUnit.SECONDS, scheduler).subscribe(to);
+
+        src.onNext(null);
+        src.onNext(1);
+        src.onNext(null);
+        scheduler.advanceTimeBy(2001, TimeUnit.MILLISECONDS);
+        src.onNext(2);
+        src.onNext(3);
+        src.onComplete();
+
+        to.assertResult(null, 1, null);
+    }
+
+    @Test
     public void take() {
         Observable.just(1)
         .skipLast(0, TimeUnit.SECONDS)

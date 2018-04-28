@@ -20,6 +20,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long time;
@@ -83,7 +84,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
 
             long now = scheduler.now(unit);
 
-            q.offer(now, t);
+            q.offer(now, Null.wrap(t));
 
             drain();
         }
@@ -182,8 +183,9 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
                     }
 
                     q.poll();
+                    //noinspection ConstantConditions
                     @SuppressWarnings("unchecked")
-                    T v = (T)q.poll();
+                    T v = Null.unwrap((T)q.poll());
 
                     a.onNext(v);
                 }

@@ -18,6 +18,7 @@ import java.util.ArrayDeque;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<T, T> {
     final int skip;
@@ -68,9 +69,11 @@ public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<
         @Override
         public void onNext(T t) {
             if (skip == size()) {
-                actual.onNext(poll());
+                //noinspection ConstantConditions
+                T tail = Null.unwrap(poll());
+                actual.onNext(tail);
             }
-            offer(t);
+            offer(Null.wrap(t));
         }
 
         @Override
