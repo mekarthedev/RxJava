@@ -115,4 +115,13 @@ public class ObservableTakeLastOneTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void justNull() {
+        Observable
+            .just(null)
+            .takeLast(1)
+            .test()
+            .assertResult((Integer)null);
+    }
 }

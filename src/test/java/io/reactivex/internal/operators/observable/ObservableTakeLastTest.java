@@ -82,7 +82,6 @@ public class ObservableTakeLastTest {
     }
 
     @Test
-    @Ignore("Null values no longer allowed")
     public void testTakeLastWithNull() {
         Observable<String> w = Observable.just("one", null, "three");
         Observable<String> take = w.takeLast(2);
@@ -203,6 +202,15 @@ public class ObservableTakeLastTest {
         .takeLast(5)
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void takeLastNulls() {
+        Observable
+            .fromArray(1, 2, null, 3, null)
+            .takeLast(3)
+            .test()
+            .assertResult(null, 3, null);
     }
 
     @Test

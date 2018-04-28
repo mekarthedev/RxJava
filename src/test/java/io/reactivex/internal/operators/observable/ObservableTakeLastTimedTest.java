@@ -218,6 +218,14 @@ public class ObservableTakeLastTimedTest {
     }
 
     @Test
+    public void takeLastNulls() {
+        Observable.fromArray(1, 2, null, 3)
+            .takeLast(2, 1, TimeUnit.MINUTES)
+            .test()
+            .assertResult(null, 3);
+    }
+
+    @Test
     public void takeLastTimeDelayError() {
         Observable.just(1, 2).concatWith(Observable.<Integer>error(new TestException()))
         .takeLast(1, TimeUnit.MINUTES, true)

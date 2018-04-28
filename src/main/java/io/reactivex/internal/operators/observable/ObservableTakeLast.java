@@ -18,6 +18,7 @@ import java.util.ArrayDeque;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<T, T> {
     final int count;
@@ -60,7 +61,7 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
             if (count == size()) {
                 poll();
             }
-            offer(t);
+            offer(Null.wrap(t));
         }
 
         @Override
@@ -82,7 +83,7 @@ public final class ObservableTakeLast<T> extends AbstractObservableWithUpstream<
                     }
                     return;
                 }
-                a.onNext(v);
+                a.onNext(Null.unwrap(v));
             }
         }
 

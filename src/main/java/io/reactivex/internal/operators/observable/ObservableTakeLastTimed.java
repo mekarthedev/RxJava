@@ -20,6 +20,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpstream<T, T> {
     final long count;
@@ -90,7 +91,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
             long c = count;
             boolean unbounded = c == Long.MAX_VALUE;
 
-            q.offer(now, t);
+            q.offer(now, Null.wrap(t));
 
             while (!q.isEmpty()) {
                 long ts = (Long)q.peek();
@@ -168,8 +169,9 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
                     return;
                 }
 
+                //noinspection ConstantConditions
                 @SuppressWarnings("unchecked")
-                T o = (T)q.poll();
+                T o = Null.unwrap((T)q.poll());
 
                 if ((Long)ts < scheduler.now(unit) - time) {
                     continue;

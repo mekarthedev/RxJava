@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstream<T, T> {
 
@@ -32,7 +33,7 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
 
         Disposable s;
 
-        T value;
+        private T value;
 
         TakeLastOneObserver(Observer<? super T> actual) {
             this.actual = actual;
@@ -48,7 +49,7 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
 
         @Override
         public void onNext(T t) {
-            value = t;
+            value = Null.wrap(t);
         }
 
         @Override
@@ -66,7 +67,7 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
             T v = value;
             if (v != null) {
                 value = null;
-                actual.onNext(v);
+                actual.onNext(Null.unwrap(v));
             }
             actual.onComplete();
         }
