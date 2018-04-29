@@ -19,6 +19,8 @@ import static org.mockito.Mockito.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subjects.PublishSubject;
 import org.junit.*;
 
 import io.reactivex.*;
@@ -137,6 +139,27 @@ public class ObservableSerializeTest {
             assertEquals(1, busyobserver.maxConcurrentThreads.get());
         }
         assertTrue(lessThan9);
+    }
+
+    @Test
+    public void serializeNulls() {
+        final PublishSubject<Integer> src = PublishSubject.create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t != null && t == 1) {
+                    TestHelper.emit(src, null, 2, 3, null);
+                }
+            }
+        };
+
+        src.serialize().subscribe(to);
+
+        src.onNext(1);
+
+        to.assertResult(1, null, 2, 3, null);
     }
 
     /**
