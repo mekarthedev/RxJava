@@ -31,11 +31,16 @@ public enum Null {
      */
     NULL;
 
+    @SuppressWarnings("unchecked")
     @NonNull
     public static <T> T wrap(@Nullable T t) {
+        if (t == NULL) {
+            throw new IllegalArgumentException("Attempt to null-wrap an already wrapped null.");
+        }
         return t != null ? t : (T)NULL;
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     public static <T> T unwrap(@NonNull T t) {
         return t != (T)NULL ? t : null;

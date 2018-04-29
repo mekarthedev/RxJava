@@ -559,6 +559,52 @@ public class ObservableWindowWithObservableTest {
     }
 
     @Test
+    public void drainNulls() {
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        final TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t != null && t == 1) {
+                    TestHelper.emit(ps, 2, null, 3);
+                }
+            }
+        };
+
+        ps.window(Observable.never())
+            .flatMap(Functions.<Observable<Integer>>identity())
+            .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertResult(1, 2, null, 3);
+    }
+
+    @Test
+    public void drainNullsCallable() {
+        final Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        final TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t != null && t == 1) {
+                    TestHelper.emit(ps, 2, null, 3);
+                }
+            }
+        };
+
+        ps.window(Functions.justCallable(Observable.never()))
+            .flatMap(Functions.<Observable<Integer>>identity())
+            .subscribe(to);
+
+        ps.onNext(1);
+
+        to.assertResult(1, 2, null, 3);
+    }
+
+    @Test
     public void badSource() {
         TestHelper.checkBadSourceObservable(new Function<Observable<Object>, Object>() {
             @Override

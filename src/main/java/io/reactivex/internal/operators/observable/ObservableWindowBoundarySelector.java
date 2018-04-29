@@ -27,6 +27,7 @@ import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.NotificationLite;
+import io.reactivex.internal.util.Null;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
@@ -110,7 +111,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                     return;
                 }
             } else {
-                queue.offer(NotificationLite.next(t));
+                queue.offer(NotificationLite.next(Null.wrap(t)));
                 if (!enter()) {
                     return;
                 }
@@ -262,7 +263,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                     }
 
                     for (UnicastSubject<T> w : ws) {
-                        w.onNext(NotificationLite.<T>getValue(o));
+                        w.onNext(Null.unwrap(NotificationLite.<T>getValue(o)));
                     }
                 }
 

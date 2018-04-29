@@ -299,6 +299,41 @@ public class ObservableWindowWithStartEndObservableTest {
     }
 
     @Test
+    public void nulls() {
+        final PublishSubject<Integer> source = PublishSubject.create();
+        final TestObserver<Integer> window = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t != null && t == 1) {
+                    TestHelper.emit(source, null, 2, 3);
+                }
+            }
+        };
+
+        PublishSubject<Integer> start = PublishSubject.create();
+        final ArrayList<Integer> actualStarters = new ArrayList<Integer>();
+
+        source
+            .window(start, new Function<Integer, ObservableSource<Integer>>() {
+                @Override
+                public ObservableSource<Integer> apply(Integer v) throws Exception {
+                    actualStarters.add(v);
+                    return Observable.never();
+                }
+            })
+            .flatMap(Functions.<Observable<Integer>>identity())
+            .subscribe(window);
+
+        start.onNext(null);
+        start.onNext(1);
+        source.onNext(1);
+
+        assertEquals(Arrays.asList(null, 1), actualStarters);
+        window.assertResult(1, 1, null, null, 2, 2, 3, 3);
+    }
+
+    @Test
     public void startError() {
         PublishSubject<Integer> source = PublishSubject.create();
         PublishSubject<Integer> start = PublishSubject.create();

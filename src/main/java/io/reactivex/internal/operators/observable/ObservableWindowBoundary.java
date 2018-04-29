@@ -20,6 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
@@ -93,7 +94,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
 
         @Override
         public void onNext(T t) {
-            queue.offer(t);
+            queue.offer(Null.wrap(t));
             drain();
         }
 
@@ -220,7 +221,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
                     }
 
                     if (v != NEXT_WINDOW) {
-                        w.onNext((T)v);
+                        w.onNext(Null.unwrap((T)v));
                         continue;
                     }
 
