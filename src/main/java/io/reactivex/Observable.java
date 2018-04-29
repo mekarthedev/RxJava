@@ -6158,7 +6158,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<U> collectInto(final U initialValue, BiConsumer<? super U, ? super T> collector) {
-        ObjectHelper.requireNonNull(initialValue, "initialValue is null");
         return collect(Functions.justCallable(initialValue), collector);
     }
 

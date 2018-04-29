@@ -538,6 +538,7 @@ public class ParamValidationCheckerTest {
 
         addIgnore(new ParamIgnore(Observable.class, "reduce", Object.class, BiFunction.class));
         addIgnore(new ParamIgnore(Observable.class, "scan", Object.class, BiFunction.class));
+        addIgnore(new ParamIgnore(Observable.class, "collectInto", Object.class, BiConsumer.class));
 
         // -----------------------------------------------------------------------------------
 

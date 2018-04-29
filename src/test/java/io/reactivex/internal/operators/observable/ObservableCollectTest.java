@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.internal.fuseable.FuseToObservable;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -277,6 +278,69 @@ public final class ObservableCollectTest {
         })
         .test()
         .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
+    }
+
+    @Test
+    public void collectIntoNull() {
+        Observable
+            .fromArray(1, 2, 3)
+            .collectInto(null, new BiConsumer<Integer, Integer>() {
+                @Override
+                public void accept(Integer s, Integer v) throws Exception {
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void collectNulls() {
+        Observable
+            .fromArray(1, null, 2, 3)
+            .collectInto(new ArrayList<Integer>(4), new BiConsumer<ArrayList<Integer>, Integer>() {
+                @Override
+                public void accept(ArrayList<Integer> s, Integer v) throws Exception {
+                    s.add(v);
+                }
+            })
+            .test()
+            .assertResult(new ArrayList<Integer>(Arrays.asList(1, null, 2, 3)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void collectIntoNullFusedToObservable() {
+        Single<Integer> collect = Observable
+            .fromArray(1, 2, 3)
+            .collectInto(null, new BiConsumer<Integer, Integer>() {
+                @Override
+                public void accept(Integer s, Integer v) throws Exception {
+                }
+            });
+
+        assertTrue("not fusable", collect instanceof FuseToObservable);
+        ((FuseToObservable<Integer>)collect).fuseToObservable()
+            .test()
+            .assertResult((Integer)null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void collectNullsFusedToObservable() {
+        Single<ArrayList<Integer>> collect = Observable
+            .fromArray(1, null, 2, 3)
+            .collectInto(new ArrayList<Integer>(4), new BiConsumer<ArrayList<Integer>, Integer>() {
+                @Override
+                public void accept(ArrayList<Integer> s, Integer v) throws Exception {
+                    s.add(v);
+                }
+            });
+
+        assertTrue("not fusable", collect instanceof FuseToObservable);
+        ((FuseToObservable<ArrayList<Integer>>)collect).fuseToObservable()
+            .test()
+            .assertResult(new ArrayList<Integer>(Arrays.asList(1, null, 2, 3)));
     }
 
     @Test

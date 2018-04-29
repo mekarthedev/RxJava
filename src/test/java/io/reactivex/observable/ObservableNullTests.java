@@ -859,19 +859,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void collectInitialSupplierReturnsNull() {
-        just1.collect(new Callable<Object>() {
-            @Override
-            public Object call() {
-                return null;
-            }
-        }, new BiConsumer<Object, Integer>() {
-            @Override
-            public void accept(Object a, Integer b) { }
-        }).blockingGet();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void collectInitialCollectorNull() {
         just1.collect(new Callable<Object>() {
             @Override
@@ -879,14 +866,6 @@ public class ObservableNullTests {
                 return 1;
             }
         }, null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void collectIntoInitialNull() {
-        just1.collectInto(null, new BiConsumer<Object, Integer>() {
-            @Override
-            public void accept(Object a, Integer b) { }
-        });
     }
 
     @Test(expected = NullPointerException.class)

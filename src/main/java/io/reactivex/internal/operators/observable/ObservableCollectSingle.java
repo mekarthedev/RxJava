@@ -40,7 +40,7 @@ public final class ObservableCollectSingle<T, U> extends Single<U> implements Fu
     protected void subscribeActual(SingleObserver<? super U> t) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
+            u = initialSupplier.call();
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;

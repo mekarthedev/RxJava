@@ -36,7 +36,7 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
     protected void subscribeActual(Observer<? super U> t) {
         U u;
         try {
-            u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
+            u = initialSupplier.call();
         } catch (Throwable e) {
             EmptyDisposable.error(e, t);
             return;
