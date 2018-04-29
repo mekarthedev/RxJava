@@ -35,7 +35,7 @@ public final class Timed<T> {
      * @param unit the time unit, not null
      * @throws NullPointerException if unit is null
      */
-    public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
+    public Timed(T value, long time, @NonNull TimeUnit unit) {
         this.value = value;
         this.time = time;
         this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
@@ -45,7 +45,6 @@ public final class Timed<T> {
      * Returns the contained value.
      * @return the contained value
      */
-    @NonNull
     public T value() {
         return value;
     }
