@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableSingleMaybe<T> extends Maybe<T> {
@@ -35,7 +36,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
 
         Disposable s;
 
-        T value;
+        private T value;
 
         boolean done;
 
@@ -74,7 +75,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
                 actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
-            value = t;
+            value = Null.wrap(t);
         }
 
         @Override
@@ -98,7 +99,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
             if (v == null) {
                 actual.onComplete();
             } else {
-                actual.onSuccess(v);
+                actual.onSuccess(Null.unwrap(v));
             }
         }
     }

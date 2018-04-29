@@ -576,13 +576,25 @@ public class ObservableSingleTest {
 
     @Test
     public void singleNull() {
-        Observable.just(null).single(1).test()
-            .assertResult((Integer)null);
+        Observable.just(null).single(1)
+            .test().assertResult((Integer)null);
     }
 
     @Test
     public void singleWithNullDefault() {
-        Observable.empty().single(null).test()
-            .assertResult((Integer)null);
+        Observable.empty().single(null)
+            .test().assertResult((Integer)null);
+    }
+
+    @Test
+    public void singleElementNull() {
+        Observable.just((Integer)null).singleElement()
+            .test().assertResult((Integer)null);
+    }
+
+    @Test
+    public void singleElementIllegalElementAfterNull() {
+        Observable.fromArray(null, 1).singleElement()
+            .test().assertNoValues().assertError(IllegalArgumentException.class);
     }
 }

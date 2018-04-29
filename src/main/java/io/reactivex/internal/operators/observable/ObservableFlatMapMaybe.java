@@ -23,6 +23,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -168,7 +169,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
             } else {
                 SpscLinkedArrayQueue<R> q = getOrCreateQueue();
                 synchronized (q) {
-                    q.offer(value);
+                    q.offer(Null.wrap(value));
                 }
                 active.decrementAndGet();
                 if (getAndIncrement() != 0) {
@@ -286,7 +287,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
                         break;
                     }
 
-                    a.onNext(v);
+                    a.onNext(Null.unwrap(v));
                 }
 
                 missed = addAndGet(-missed);

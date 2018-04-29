@@ -48,6 +48,19 @@ public class ObservableFlatMapSingleTest {
     }
 
     @Test
+    public void normalNulls() {
+        Observable.fromArray(1, null, 2, 3)
+            .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                @Override
+                public SingleSource<Integer> apply(Integer v) throws Exception {
+                    return Single.just(v);
+                }
+            })
+            .test()
+            .assertResult(1, null, 2, 3);
+    }
+
+    @Test
     public void normalDelayError() {
         Observable.range(1, 10)
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
@@ -339,6 +352,41 @@ public class ObservableFlatMapSingleTest {
         ps1.onComplete();
 
         to.assertResult(1, 2);
+    }
+
+    @Test
+    public void drainNulls() {
+        final PublishSubject<Integer> ps1 = PublishSubject.create();
+        final PublishSubject<Integer> ps2 = PublishSubject.create();
+        final PublishSubject<Integer> ps3 = PublishSubject.create();
+
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t != null && t == 1) {
+                    ps2.onNext(null);
+                    ps2.onComplete();
+                } else if (t == null) {
+                    ps3.onNext(2);
+                    ps3.onComplete();
+                }
+            }
+        };
+
+        Observable.just(ps1, ps2, ps3)
+            .flatMapSingle(new Function<PublishSubject<Integer>, SingleSource<Integer>>() {
+                @Override
+                public SingleSource<Integer> apply(PublishSubject<Integer> v) throws Exception {
+                    return v.singleOrError();
+                }
+            })
+            .subscribe(to);
+
+        ps1.onNext(1);
+        ps1.onComplete();
+
+        to.assertResult(1, null, 2);
     }
 
     @Test
