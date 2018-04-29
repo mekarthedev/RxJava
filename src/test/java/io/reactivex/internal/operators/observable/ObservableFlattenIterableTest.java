@@ -29,6 +29,20 @@ import io.reactivex.subjects.PublishSubject;
 public class ObservableFlattenIterableTest {
 
     @Test
+    public void nullValues() {
+        Observable
+            .fromArray(1, null, 2, 3)
+            .flatMapIterable(new Function<Integer, Iterable<?>>() {
+                @Override
+                public Iterable<?> apply(Integer i) throws Exception {
+                    return Arrays.asList(i == null ? 99 : i * 100, null);
+                }
+            })
+            .test()
+            .assertResult(100, null, 99, null, 200, null, 300, null);
+    }
+
+    @Test
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.create().flatMapIterable(new Function<Object, Iterable<Integer>>() {
             @Override

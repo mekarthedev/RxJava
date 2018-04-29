@@ -1339,16 +1339,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void flatMapIterableMapperIterableOneNull() {
-        just1.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
-            @Override
-            public Iterable<Integer> apply(Integer v) {
-                return Arrays.asList(1, null);
-            }
-        }).blockingSubscribe();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void flatMapIterableCombinerNull() {
         just1.flatMapIterable(new Function<Integer, Iterable<Integer>>() {
             @Override

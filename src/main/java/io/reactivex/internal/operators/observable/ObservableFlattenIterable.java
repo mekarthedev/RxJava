@@ -100,7 +100,7 @@ public final class ObservableFlattenIterable<T, R> extends AbstractObservableWit
                     R v;
 
                     try {
-                        v = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
+                        v = it.next();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         d.dispose();
