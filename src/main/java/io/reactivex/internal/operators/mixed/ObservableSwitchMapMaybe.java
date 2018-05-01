@@ -23,6 +23,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -238,7 +239,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
 
                     inner.compareAndSet(current, null);
 
-                    downstream.onNext(current.item);
+                    downstream.onNext(Null.unwrap(current.item));
                 }
 
                 missed = addAndGet(-missed);
@@ -268,7 +269,7 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
 
             @Override
             public void onSuccess(R t) {
-                item = t;
+                item = Null.wrap(t);
                 parent.drain();
             }
 

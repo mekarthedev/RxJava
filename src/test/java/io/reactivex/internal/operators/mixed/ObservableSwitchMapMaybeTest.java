@@ -46,6 +46,19 @@ public class ObservableSwitchMapMaybeTest {
     }
 
     @Test
+    public void simpleNulls() {
+        Observable.fromArray(1, null, 2, 3)
+        .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.just(v);
+            }
+        })
+        .test()
+        .assertResult(1, null, 2, 3);
+    }
+
+    @Test
     public void simpleEmpty() {
         Observable.range(1, 5)
         .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
@@ -685,5 +698,18 @@ public class ObservableSwitchMapMaybeTest {
         ms.onSuccess(2);
 
         to.assertResult(2);
+    }
+
+    @Test
+    public void scalarNull() {
+        Observable.just((Integer)null)
+        .switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.just(v);
+            }
+        })
+        .test()
+        .assertResult((Integer)null);
     }
 }

@@ -46,6 +46,20 @@ public class ObservableSwitchMapSingleTest {
     }
 
     @Test
+    public void simpleNulls() {
+        Observable.fromArray(1, null, 2, 3)
+        .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Integer v)
+                throws Exception {
+                return Single.just(v);
+            }
+        })
+        .test()
+        .assertResult(1, null, 2, 3);
+    }
+
+    @Test
     public void mainError() {
         Observable.error(new TestException())
         .switchMapSingle(Functions.justFunction(Single.never()))
@@ -653,5 +667,18 @@ public class ObservableSwitchMapSingleTest {
         ss.onSuccess(2);
 
         to.assertResult(2);
+    }
+
+    @Test
+    public void scalarNull() {
+        Observable.just((Integer)null)
+        .switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Integer v) throws Exception {
+                return Single.just(v);
+            }
+        })
+        .test()
+        .assertResult((Integer)null);
     }
 }
