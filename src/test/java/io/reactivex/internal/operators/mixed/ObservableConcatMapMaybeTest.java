@@ -399,4 +399,30 @@ public class ObservableConcatMapMaybeTest {
 
         assertTrue(operator.queue.isEmpty());
     }
+
+    @Test
+    public void simpleNulls() {
+        Observable.fromArray(1, null, 2, 3).hide()
+            .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+                @Override
+                public MaybeSource<Integer> apply(Integer v) throws Exception {
+                    return Maybe.just(v);
+                }
+            })
+            .test()
+            .assertResult(1, null, 2, 3);
+    }
+
+    @Test
+    public void scalarNull() {
+        Observable.just((Integer)null)
+            .concatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+                @Override
+                public MaybeSource<Integer> apply(Integer v) throws Exception {
+                    return Maybe.just(v);
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+    }
 }

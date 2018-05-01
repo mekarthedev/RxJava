@@ -80,6 +80,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
         final int prefetch;
 
         SimpleQueue<T> queue;
+        int fusionMode;
 
         Disposable upstream;
 
@@ -111,6 +112,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                     int m = qd.requestFusion(QueueDisposable.ANY);
                     if (m == QueueDisposable.SYNC) {
                         queue = qd;
+                        fusionMode = m;
                         done = true;
                         downstream.onSubscribe(this);
                         drain();
@@ -118,6 +120,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                     }
                     if (m == QueueDisposable.ASYNC) {
                         queue = qd;
+                        fusionMode = m;
                         downstream.onSubscribe(this);
                         return;
                     }
@@ -129,8 +132,8 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
 
         @Override
         public void onNext(T t) {
-            if (t != null) {
-                queue.offer(t);
+            if (fusionMode == QueueFuseable.NONE) {
+                queue.offer(Null.wrap(t));
             }
             drain();
         }
@@ -236,7 +239,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                     try {
                         T v = queue.poll();
                         if (v != null) {
-                            cs = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null CompletableSource");
+                            cs = ObjectHelper.requireNonNull(mapper.apply(Null.unwrap(v)), "The mapper returned a null CompletableSource");
                             empty = false;
                         }
                     } catch (Throwable ex) {

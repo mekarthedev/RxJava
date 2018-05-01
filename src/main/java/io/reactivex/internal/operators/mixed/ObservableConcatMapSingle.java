@@ -120,7 +120,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
         @Override
         public void onNext(T t) {
-            queue.offer(t);
+            queue.offer(Null.wrap(t));
             drain();
         }
 
@@ -231,7 +231,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
                         SingleSource<? extends R> ss;
 
                         try {
-                            ss = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
+                            ss = ObjectHelper.requireNonNull(mapper.apply(Null.unwrap(v)), "The mapper returned a null SingleSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             upstream.dispose();

@@ -120,7 +120,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
 
         @Override
         public void onNext(T t) {
-            queue.offer(t);
+            queue.offer(Null.wrap(t));
             drain();
         }
 
@@ -236,7 +236,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
                         MaybeSource<? extends R> ms;
 
                         try {
-                            ms = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null MaybeSource");
+                            ms = ObjectHelper.requireNonNull(mapper.apply(Null.unwrap(v)), "The mapper returned a null MaybeSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             upstream.dispose();

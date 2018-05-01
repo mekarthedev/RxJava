@@ -15,9 +15,13 @@ package io.reactivex.internal.operators.mixed;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.internal.fuseable.QueueFuseable;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -430,5 +434,61 @@ public class ObservableConcatMapCompletableTest {
         cs.onComplete();
 
         to.assertResult();
+    }
+
+    @Test
+    public void simpleNulls() {
+        final List<Integer> values = new ArrayList<Integer>(4);
+
+        Observable.fromArray(1, null, 2, 3).hide()
+            .concatMapCompletable(new Function<Integer, CompletableSource>() {
+                @Override
+                public CompletableSource apply(Integer v) throws Exception {
+                    values.add(v);
+                    return Completable.complete();
+                }
+            })
+            .test()
+            .assertComplete();
+
+        assertEquals(values, Arrays.asList(1, null, 2, 3));
+    }
+
+    @Test
+    public void scalarNull() {
+        final List<Integer> values = new ArrayList<Integer>(4);
+
+        Observable.just((Integer)null)
+            .concatMapCompletable(new Function<Integer, CompletableSource>() {
+                @Override
+                public CompletableSource apply(Integer v) throws Exception {
+                    values.add(v);
+                    return Completable.complete();
+                }
+            })
+            .test()
+            .assertComplete();
+
+        assertEquals(values, Collections.singletonList(null));
+    }
+
+    @Test
+    public void fuseNulls() {
+        TestFuseableObservable<Integer> source = new TestFuseableObservable<Integer>(QueueFuseable.ASYNC, 1, null, 2, 3);
+        final List<Integer> values = new ArrayList<Integer>(4);
+
+        source
+            .concatMapCompletable(new Function<Integer, CompletableSource>() {
+                @Override
+                public CompletableSource apply(Integer v) throws Exception {
+                    values.add(v);
+                    return Completable.complete();
+                }
+            })
+            .test()
+            .assertComplete();
+
+        source.assertFusionMode(QueueFuseable.ASYNC);
+        assertEquals(values, Arrays.asList(1, null, 2, 3));
     }
 }

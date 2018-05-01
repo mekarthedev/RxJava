@@ -336,4 +336,30 @@ public class ObservableConcatMapSingleTest {
 
         assertTrue(operator.queue.isEmpty());
     }
+
+    @Test
+    public void simpleNulls() {
+        Observable.fromArray(1, null, 2, 3).hide()
+            .concatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                @Override
+                public SingleSource<Integer> apply(Integer v) throws Exception {
+                    return Single.just(v);
+                }
+            })
+            .test()
+            .assertResult(1, null, 2, 3);
+    }
+
+    @Test
+    public void scalarNull() {
+        Observable.just((Integer)null)
+            .concatMapSingle(new Function<Integer, SingleSource<Integer>>() {
+                @Override
+                public SingleSource<Integer> apply(Integer v) throws Exception {
+                    return Single.just(v);
+                }
+            })
+            .test()
+            .assertResult((Integer)null);
+    }
 }
