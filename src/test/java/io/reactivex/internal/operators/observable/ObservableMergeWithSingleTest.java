@@ -40,6 +40,15 @@ public class ObservableMergeWithSingleTest {
     }
 
     @Test
+    public void normalNulls() {
+        Observable
+        .fromArray(1, null, 2, 3)
+        .mergeWith(Single.just((Integer)null))
+        .test()
+        .assertResult(1, null, 2, 3, null);
+    }
+
+    @Test
     public void normalLong() {
         Observable.range(1, 512)
         .mergeWith(Single.just(100))
@@ -127,7 +136,9 @@ public class ObservableMergeWithSingleTest {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
-                if (t == 1) {
+                if (t != null && t == 1) {
+                    ps.onNext(null);
+                } else if (t == null) {
                     ps.onNext(2);
                 }
             }
@@ -139,7 +150,7 @@ public class ObservableMergeWithSingleTest {
         ps.onNext(4);
         ps.onComplete();
 
-        to.assertResult(1, 2, 3, 4);
+        to.assertResult(1, null, 2, 3, 4);
     }
 
     @Test
@@ -163,6 +174,29 @@ public class ObservableMergeWithSingleTest {
         ps.onComplete();
 
         to.assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void onSuccessNullSlowPath() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+        final SingleSubject<Integer> cs = SingleSubject.create();
+
+        TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t != null && t == 1) {
+                    cs.onSuccess(null);
+                }
+            }
+        });
+
+        ps.onNext(1);
+
+        ps.onNext(2);
+        ps.onComplete();
+
+        to.assertResult(1, null, 2);
     }
 
     @Test

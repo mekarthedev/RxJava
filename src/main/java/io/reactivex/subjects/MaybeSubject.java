@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -120,7 +121,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     static final MaybeDisposable[] TERMINATED = new MaybeDisposable[0];
 
     final AtomicBoolean once;
-    T value;
+    private T value;
     Throwable error;
 
     /**
@@ -150,9 +151,8 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     @SuppressWarnings("unchecked")
     @Override
     public void onSuccess(T value) {
-        ObjectHelper.requireNonNull(value, "onSuccess called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (once.compareAndSet(false, true)) {
-            this.value = value;
+            this.value = Null.wrap(value);
             for (MaybeDisposable<T> md : observers.getAndSet(TERMINATED)) {
                 md.actual.onSuccess(value);
             }
@@ -200,7 +200,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
                 if (v == null) {
                     observer.onComplete();
                 } else {
-                    observer.onSuccess(v);
+                    observer.onSuccess(Null.unwrap(v));
                 }
             }
         }
@@ -266,8 +266,9 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
      */
     @Nullable
     public T getValue() {
-        if (observers.get() == TERMINATED) {
-            return value;
+        T v = value;
+        if (observers.get() == TERMINATED && v != null) {
+            return Null.unwrap(v);
         }
         return null;
     }

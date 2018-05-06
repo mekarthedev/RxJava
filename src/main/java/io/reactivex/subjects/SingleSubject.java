@@ -133,8 +133,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onSuccess(@NonNull T value) {
-        ObjectHelper.requireNonNull(value, "onSuccess called with null. Null values are generally not allowed in 2.x operators and sources.");
+    public void onSuccess(T value) {
         if (once.compareAndSet(false, true)) {
             this.value = value;
             for (SingleDisposable<T> md : observers.getAndSet(TERMINATED)) {
@@ -246,7 +245,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
      * @return true if this SingleSubject was terminated with a success value
      */
     public boolean hasValue() {
-        return observers.get() == TERMINATED && value != null;
+        return observers.get() == TERMINATED && error == null;
     }
 
     /**

@@ -48,6 +48,15 @@ public class ObservableMergeWithMaybeTest {
     }
 
     @Test
+    public void normalNull() {
+        Observable
+        .fromArray(1, null, 2, 3)
+        .mergeWith(Maybe.just((Integer)null))
+        .test()
+        .assertResult(1, null, 2, 3, null);
+    }
+
+    @Test
     public void normalLong() {
         Observable.range(1, 512)
         .mergeWith(Maybe.just(100))
@@ -135,7 +144,9 @@ public class ObservableMergeWithMaybeTest {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
-                if (t == 1) {
+                if (t != null && t == 1) {
+                    ps.onNext(null);
+                } else if (t == null) {
                     ps.onNext(2);
                 }
             }
@@ -147,7 +158,7 @@ public class ObservableMergeWithMaybeTest {
         ps.onNext(4);
         ps.onComplete();
 
-        to.assertResult(1, 2, 3, 4);
+        to.assertResult(1, null, 2, 3, 4);
     }
 
     @Test
@@ -171,6 +182,29 @@ public class ObservableMergeWithMaybeTest {
         ps.onComplete();
 
         to.assertResult(1, 2, 3);
+    }
+
+    @Test
+    public void onSuccessNullSlowPath() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+        final MaybeSubject<Integer> cs = MaybeSubject.create();
+
+        TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t != null && t == 1) {
+                    cs.onSuccess(null);
+                }
+            }
+        });
+
+        ps.onNext(1);
+
+        ps.onNext(2);
+        ps.onComplete();
+
+        to.assertResult(1, null, 2);
     }
 
     @Test

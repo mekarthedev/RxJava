@@ -70,6 +70,21 @@ public class MaybeSubjectTest {
     }
 
     @Test
+    public void successNull() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+
+        ms.onSuccess(null);
+
+        assertTrue(ms.hasValue());
+        assertNull(ms.getValue());
+        assertFalse(ms.hasComplete());
+        assertFalse(ms.hasThrowable());
+        assertNull(ms.getThrowable());
+
+        ms.test().assertResult((Integer)null);
+    }
+
+    @Test
     public void once() {
         MaybeSubject<Integer> ms = MaybeSubject.create();
 

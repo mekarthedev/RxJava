@@ -21,6 +21,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -95,7 +96,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
                 }
             } else {
                 SimplePlainQueue<T> q = getOrCreateQueue();
-                q.offer(t);
+                q.offer(Null.wrap(t));
                 if (getAndIncrement() != 0) {
                     return;
                 }
@@ -221,7 +222,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
                         break;
                     }
 
-                    actual.onNext(v);
+                    actual.onNext(Null.unwrap(v));
                 }
 
                 missed = addAndGet(-missed);

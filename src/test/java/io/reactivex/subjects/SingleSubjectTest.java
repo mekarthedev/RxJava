@@ -67,6 +67,20 @@ public class SingleSubjectTest {
     }
 
     @Test
+    public void successNull() {
+        SingleSubject<Integer> ss = SingleSubject.create();
+
+        ss.onSuccess(null);
+
+        assertTrue(ss.hasValue());
+        assertNull(ss.getValue());
+        assertFalse(ss.hasThrowable());
+        assertNull(ss.getThrowable());
+
+        ss.test().assertResult((Integer)null);
+    }
+
+    @Test
     public void once() {
         SingleSubject<Integer> ss = SingleSubject.create();
 
@@ -124,20 +138,6 @@ public class SingleSubjectTest {
         assertTrue(ss.getThrowable().toString(), ss.getThrowable() instanceof IOException);
         assertFalse(ss.hasObservers());
         assertEquals(0, ss.observerCount());
-    }
-
-    @Test
-    public void nullValue() {
-        SingleSubject<Integer> ss = SingleSubject.create();
-
-        try {
-            ss.onSuccess(null);
-            fail("No NullPointerException thrown");
-        } catch (NullPointerException ex) {
-            assertEquals("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
-        }
-
-        ss.test().assertEmpty().cancel();
     }
 
     @Test
