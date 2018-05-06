@@ -143,12 +143,8 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                 if (hasNext) {
                     onError(new IllegalStateException("onNext already called in this generate turn"));
                 } else {
-                    if (t == null) {
-                        onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
-                    } else {
-                        hasNext = true;
-                        actual.onNext(t);
-                    }
+                    hasNext = true;
+                    actual.onNext(t);
                 }
             }
         }

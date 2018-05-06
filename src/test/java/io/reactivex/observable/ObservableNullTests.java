@@ -346,16 +346,6 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void generateConsumerEmitsNull() {
-        Observable.generate(new Consumer<Emitter<Object>>() {
-            @Override
-            public void accept(Emitter<Object> s) {
-                s.onNext(null);
-            }
-        }).blockingLast();
-    }
-
-    @Test(expected = NullPointerException.class)
     public void generateStateConsumerInitialStateNull() {
         BiConsumer<Integer, Emitter<Integer>> generator = new BiConsumer<Integer, Emitter<Integer>>() {
             @Override

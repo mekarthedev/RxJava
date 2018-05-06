@@ -15,6 +15,8 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -48,6 +50,51 @@ public class ObservableGenerateTest {
         .take(5)
         .test()
         .assertResult(10, 10, 10, 10, 10);
+    }
+
+    @Test
+    public void generateNulls() {
+        final AtomicReference<Integer> disposedState = new AtomicReference<Integer>(42);
+        Observable
+        .generate(
+            new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    return null;
+                }
+            },
+            new BiFunction<Integer, Emitter<Integer>, Integer>() {
+                @Override
+                public Integer apply(Integer state, Emitter<Integer> emitter) throws Exception {
+                    if (state == null) {
+                        emitter.onNext(-1);
+                        return 1;
+                    }
+                    if (state == 1) {
+                        emitter.onNext(null);
+                        return 2;
+                    }
+                    if (state == 2) {
+                        emitter.onNext(1);
+                        return 3;
+                    }
+                    if (state == 3) {
+                        emitter.onComplete();
+                        return null;
+                    }
+                    throw new IllegalStateException();
+                }
+            },
+            new Consumer<Integer>() {
+                @Override
+                public void accept(Integer state) throws Exception {
+                    disposedState.set(state);
+                }
+            }
+        )
+        .test()
+        .assertResult(-1, null, 1);
+        assertEquals(disposedState.get(), null);
     }
 
     @Test
