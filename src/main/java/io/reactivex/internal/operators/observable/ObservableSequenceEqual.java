@@ -21,6 +21,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.disposables.ArrayCompositeDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.Null;
 
 public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
     final ObservableSource<? extends T> first;
@@ -181,7 +182,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                         boolean c;
 
                         try {
-                            c = comparer.test(v1, v2);
+                            c = comparer.test(Null.unwrap(v1), Null.unwrap(v2));
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             cancel(q1, q2);
@@ -236,7 +237,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
 
         @Override
         public void onNext(T t) {
-            queue.offer(t);
+            queue.offer(Null.wrap(t));
             parent.drain();
         }
 

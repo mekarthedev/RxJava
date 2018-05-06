@@ -22,6 +22,7 @@ import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.disposables.ArrayCompositeDisposable;
 import io.reactivex.internal.fuseable.FuseToObservable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> implements FuseToObservable<Boolean> {
@@ -186,7 +187,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
                         boolean c;
 
                         try {
-                            c = comparer.test(v1, v2);
+                            c = comparer.test(Null.unwrap(v1), Null.unwrap(v2));
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             cancel(q1, q2);
@@ -240,7 +241,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
 
         @Override
         public void onNext(T t) {
-            queue.offer(t);
+            queue.offer(Null.wrap(t));
             parent.drain();
         }
 

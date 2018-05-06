@@ -103,7 +103,6 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    @Ignore("Null values not allowed")
     public void testWithNull1Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just((String) null), Observable.just("one")).toObservable();
@@ -111,7 +110,6 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    @Ignore("Null values not allowed")
     public void testWithNull2Observable() {
         Observable<Boolean> o = Observable.sequenceEqual(
                 Observable.just((String) null), Observable.just((String) null)).toObservable();
@@ -248,7 +246,6 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    @Ignore("Null values not allowed")
     public void testWithNull1() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just((String) null), Observable.just("one"));
@@ -256,7 +253,6 @@ public class ObservableSequenceEqualTest {
     }
 
     @Test
-    @Ignore("Null values not allowed")
     public void testWithNull2() {
         Single<Boolean> o = Observable.sequenceEqual(
                 Observable.just((String) null), Observable.just((String) null));
@@ -312,6 +308,41 @@ public class ObservableSequenceEqualTest {
         .toObservable()
         .test()
         .assertResult(false);
+    }
+
+    @Test
+    public void customNullComparator() {
+        Observable
+        .sequenceEqual(
+            Observable.fromArray(1, null, 2, 3),
+            Observable.fromArray(1, null, 2, 3),
+            new BiPredicate<Integer, Integer>() {
+                @Override
+                public boolean test(Integer lhs, Integer rhs) throws Exception {
+                    return lhs == null && rhs == null || lhs.intValue() == rhs.intValue();
+                }
+            }
+        )
+        .test()
+        .assertResult(true);
+    }
+
+    @Test
+    public void customNullComparatorToObservable() {
+        Observable
+        .sequenceEqual(
+            Observable.fromArray(1, null, 2, 3),
+            Observable.fromArray(1, null, 2, 3),
+            new BiPredicate<Integer, Integer>() {
+                @Override
+                public boolean test(Integer lhs, Integer rhs) throws Exception {
+                    return lhs == null && rhs == null || lhs.intValue() == rhs.intValue();
+                }
+            }
+        )
+        .toObservable()
+        .test()
+        .assertResult(true);
     }
 
     @Test
