@@ -75,25 +75,12 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onNext(@NonNull T t) {
+    public void onNext(T t) {
         if (done) {
             return;
         }
         if (s == null) {
             onNextNoSubscription();
-            return;
-        }
-
-        if (t == null) {
-            Throwable ex = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-            try {
-                s.dispose();
-            } catch (Throwable e1) {
-                Exceptions.throwIfFatal(e1);
-                onError(new CompositeException(ex, e1));
-                return;
-            }
-            onError(ex);
             return;
         }
 

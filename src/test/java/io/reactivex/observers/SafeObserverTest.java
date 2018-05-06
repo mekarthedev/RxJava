@@ -527,21 +527,6 @@ public class SafeObserverTest {
     }
 
     @Test
-    public void onNextNull() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
-
-        SafeObserver<Integer> so = new SafeObserver<Integer>(to);
-
-        Disposable d = Disposables.empty();
-
-        so.onSubscribe(d);
-
-        so.onNext(null);
-
-        to.assertFailure(NullPointerException.class);
-    }
-
-    @Test
     public void onNextWithoutOnSubscribe() {
         TestObserver<Integer> to = new TestObserver<Integer>();
 
@@ -777,18 +762,6 @@ public class SafeObserverTest {
         } finally {
             RxJavaPlugins.reset();
         }
-    }
-
-    @Test
-    public void onNextNullDisposeCrashes() {
-        CrashDummy cd = new CrashDummy(false, 1, false, false, true);
-        SafeObserver<Object> so = cd.toSafe();
-        so.onSubscribe(cd);
-
-        so.onNext(null);
-
-        cd.assertInnerError(0, NullPointerException.class);
-        cd.assertInnerError(1, TestException.class, "dispose()");
     }
 
     @Test
