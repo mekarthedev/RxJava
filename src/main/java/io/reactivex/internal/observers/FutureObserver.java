@@ -21,6 +21,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.util.BlockingHelper;
+import io.reactivex.internal.util.Null;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -32,7 +33,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FutureObserver<T> extends CountDownLatch
 implements Observer<T>, Future<T>, Disposable {
 
-    T value;
+    private T value;
     Throwable error;
 
     final AtomicReference<Disposable> s;
@@ -84,7 +85,7 @@ implements Observer<T>, Future<T>, Disposable {
         if (ex != null) {
             throw new ExecutionException(ex);
         }
-        return value;
+        return Null.unwrap(value);
     }
 
     @Override
@@ -104,7 +105,7 @@ implements Observer<T>, Future<T>, Disposable {
         if (ex != null) {
             throw new ExecutionException(ex);
         }
-        return value;
+        return Null.unwrap(value);
     }
 
     @Override
@@ -119,7 +120,7 @@ implements Observer<T>, Future<T>, Disposable {
             onError(new IndexOutOfBoundsException("More than one element received"));
             return;
         }
-        value = t;
+        value = Null.wrap(t);
     }
 
     @Override

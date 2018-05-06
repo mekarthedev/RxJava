@@ -130,6 +130,14 @@ public class FutureObserverTest {
     }
 
     @Test
+    public void nullValue() throws Exception {
+        fo.onNext(null);
+        fo.onComplete();
+
+        assertEquals(fo.get(5, TimeUnit.MILLISECONDS), null);
+    }
+
+    @Test
     public void onSubscribe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
 
